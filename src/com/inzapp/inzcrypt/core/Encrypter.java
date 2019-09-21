@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class Encrypter {
-    private final String TMP_PATH = ".tmp";
+    private final String TMP = ".tmp";
 
     public boolean encrypt(File file) throws Exception {
         String fileNameWithExtension = file.getName();
@@ -49,12 +49,12 @@ public class Encrypter {
         sb.append(fileNameWithExtension);
         br.close();
 
-        FileOutputStream fos = new FileOutputStream(file.getAbsoluteFile() + TMP_PATH);
+        FileOutputStream fos = new FileOutputStream(file.getAbsoluteFile() + TMP);
         fos.write(sb.toString().getBytes(StandardCharsets.UTF_8));
         fos.close();
 
         file.delete();
-        new File(file.getAbsolutePath() + TMP_PATH).renameTo(file);
+        new File(file.getAbsolutePath() + TMP).renameTo(file);
     }
 
     private File renameToZero(File file) throws Exception {
@@ -88,19 +88,19 @@ public class Encrypter {
 
         byte[] base64 = Base64.getEncoder().encode(sb.toString().getBytes(StandardCharsets.UTF_8));
         String encodedFile = new String(base64, StandardCharsets.UTF_8);
-        FileOutputStream fos = new FileOutputStream(file.getAbsoluteFile() + TMP_PATH);
+        FileOutputStream fos = new FileOutputStream(file.getAbsoluteFile() + TMP);
         fos.write(encodedFile.getBytes(StandardCharsets.UTF_8));
         fos.close();
 
         file.delete();
-        new File(file.getAbsolutePath() + TMP_PATH).renameTo(file);
+        new File(file.getAbsolutePath() + TMP).renameTo(file);
     }
 
     private void zip(File file) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
 
-        ZipFile zipFile = new ZipFile(file.getAbsoluteFile() + TMP_PATH);
+        ZipFile zipFile = new ZipFile(file.getAbsoluteFile() + TMP);
         ZipParameters zipParameters = new ZipParameters();
         zipParameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
         zipParameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_FASTEST);
@@ -112,7 +112,7 @@ public class Encrypter {
         zipFile.createZipFile(file, zipParameters);
 
         file.delete();
-        new File(file.getAbsolutePath() + TMP_PATH).renameTo(file);
+        new File(file.getAbsolutePath() + TMP).renameTo(file);
     }
 
     private String getFileNameWithoutExtension(File file) throws Exception {

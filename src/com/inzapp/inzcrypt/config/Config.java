@@ -6,7 +6,7 @@ public class Config {
     public static final String ZIP_PASSWORD = "ZIP_PASSWORD";
 
     public static final String[] ORDER = new String[]{
-            ENCODE_64,
-            ZIP_PASSWORD
+            ENCODE_64/*,
+            ZIP_PASSWORD*/
     };
 }
