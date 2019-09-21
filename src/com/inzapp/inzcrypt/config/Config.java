@@ -6,7 +6,7 @@ public class Config {
     public static final String COMPRESS_WITH_PASSWORD = "COMPRESS_WITH_PASSWORD";
 
     public static final String[] ORDER = new String[]{
-//            ENCODE_64,
+            ENCODE_BASE64,
             COMPRESS_WITH_PASSWORD
     };
 }

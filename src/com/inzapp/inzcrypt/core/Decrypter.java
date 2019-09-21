@@ -3,11 +3,11 @@ package com.inzapp.inzcrypt.core;
 import com.inzapp.inzcrypt.config.Config;
 import net.lingala.zip4j.core.ZipFile;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
-import java.util.ArrayList;
+import java.nio.file.StandardCopyOption;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
@@ -16,7 +16,7 @@ public class Decrypter {
     private final String TMP = ".tmp";
     private final String DIR = ".dir";
 
-    public boolean decrypt(File file) throws Exception {
+    public void decrypt(File file) throws Exception {
         for (int i = Config.ORDER.length - 1; i >= 0; --i) {
             switch (Config.ORDER[i]) {
                 case Config.ENCODE_BASE64:
@@ -31,32 +31,21 @@ public class Decrypter {
                     break;
             }
         }
-        return renameToOriginalName(file);
+        renameToOriginalName(file);
     }
 
     private void decode64(File file) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
 
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        StringBuilder sb = new StringBuilder();
-        while (true) {
-            String line = br.readLine();
-            if (line == null)
-                break;
-            sb.append(line);
-        }
-        br.close();
+        StringBuilder contentBuilder = new StringBuilder();
+        List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+        lines.forEach(contentBuilder::append);
 
-        byte[] decoded = Base64.getDecoder().decode(sb.toString());
-        String decodedStr = new String(decoded, StandardCharsets.UTF_8);
+        byte[] decoded = Base64.getDecoder().decode(contentBuilder.toString());
+        String decodedContent = new String(decoded, StandardCharsets.UTF_8);
 
-        FileOutputStream fos = new FileOutputStream(file.getAbsoluteFile() + TMP);
-        fos.write(decodedStr.getBytes(StandardCharsets.UTF_8));
-        fos.close();
-
-        file.delete();
-        new File(file.getAbsolutePath() + TMP).renameTo(file);
+        Files.write(file.toPath(), decodedContent.getBytes(StandardCharsets.UTF_8));
     }
 
     private void unZip(File file) throws Exception {
@@ -70,46 +59,31 @@ public class Decrypter {
         File unzippedDir = new File(file.getAbsolutePath() + DIR);
         zipFile.extractFile("0", unzippedDir.getAbsolutePath());
 
-        File unzippedZeroFie = Objects.requireNonNull(unzippedDir.listFiles())[0];
-        File tmpFile = new File(file.getAbsolutePath() + TMP);
-
-        Files.move(unzippedZeroFie.toPath(), tmpFile.toPath());
-        Files.deleteIfExists(unzippedDir.toPath());
-
-        Files.deleteIfExists(file.toPath());
-        Files.move(tmpFile.toPath(), file.toPath());
+        File unzippedZeroFile = Objects.requireNonNull(unzippedDir.listFiles())[0];
+        Files.move(unzippedZeroFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
-    private boolean renameToOriginalName(File file) throws Exception {
+    private void renameToOriginalName(File file) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
 
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        List<String> lines = new ArrayList<>();
-        while (true) {
-            String line = br.readLine();
-            if (line == null)
-                break;
-            lines.add(line);
-        }
-        br.close();
-
+        List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
         String originalFileNameWithExtension = lines.get(lines.size() - 1);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < lines.size() - 1; ++i)
             sb.append(lines.get(i)).append('\n');
 
-        FileOutputStream fos = new FileOutputStream(file.getAbsoluteFile() + TMP);
-        fos.write(sb.toString().getBytes(StandardCharsets.UTF_8));
-        fos.close();
+        File tmpFile = new File(file.getAbsolutePath() + TMP);
+        Files.write(tmpFile.toPath(), sb.toString().getBytes(StandardCharsets.UTF_8));
 
         StringBuilder originalPathBuilder = new StringBuilder();
         String[] iso = file.getAbsolutePath().split("\\\\");
         for (int i = 0; i < iso.length - 1; ++i)
             originalPathBuilder.append(iso[i]).append('\\');
         originalPathBuilder.append(originalFileNameWithExtension);
+        File originalFile = new File(originalPathBuilder.toString());
 
-        file.delete();
-        return new File(file.getAbsolutePath() + TMP).renameTo(new File(originalPathBuilder.toString()));
+        Files.deleteIfExists(file.toPath());
+        Files.move(tmpFile.toPath(), originalFile.toPath());
     }
 }

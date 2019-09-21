@@ -6,27 +6,25 @@ import com.inzapp.inzcrypt.core.Encrypter;
 import java.io.File;
 
 public class Inzcrypt {
-    public static void main(String[] args) {
+    private Encrypter encrypter;
+    private Decrypter decrypter;
+
+    public Inzcrypt() {
+        this.encrypter = new Encrypter();
+        this.decrypter = new Decrypter();
+    }
+
+    public static void main(String[] args) throws Exception {
         Inzcrypt inzcrypt = new Inzcrypt();
-        try {
-            if (inzcrypt.encrypt(new File("1.iml")))
-                System.out.println("encrypt success");
-            else System.out.println("encrypt failure");
-
-
-            if (inzcrypt.decrypt(new File("1.izc")))
-                System.out.println("decrypt success");
-            else System.out.println("decrypt failure");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        inzcrypt.encrypt(new File("1.iml"));
+        inzcrypt.decrypt(new File("1.izc"));
     }
 
-    public boolean encrypt(File file) throws Exception {
-        return new Encrypter().encrypt(file);
+    public void encrypt(File file) throws Exception {
+        this.encrypter.encrypt(file);
     }
 
-    public boolean decrypt(File file) throws Exception {
-        return new Decrypter().decrypt(file);
+    public void decrypt(File file) throws Exception {
+        this.decrypter.decrypt(file);
     }
 }

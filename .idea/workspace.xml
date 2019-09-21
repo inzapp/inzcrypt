@@ -11,7 +11,6 @@
       <change beforePath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/config/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/config/Config.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/core/Decrypter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/core/Decrypter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/core/Encrypter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/core/Encrypter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.xml" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
