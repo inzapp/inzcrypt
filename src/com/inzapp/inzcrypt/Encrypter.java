@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Base64;
-import java.util.List;
 
 class Encrypter {
     private final String TMP = ".tmp";
@@ -22,16 +21,24 @@ class Encrypter {
         file = renameToZero(file);
         for (int i = 0; i < Config.ORDER.length; ++i) {
             switch (Config.ORDER[i]) {
-                case Config.ENCODE_BASE64:
+                case Config.AES_128:
+                    aes(file, Zip4jConstants.AES_STRENGTH_128);
+                    break;
+
+                case Config.AES_192:
+                    aes(file, Zip4jConstants.AES_STRENGTH_192);
+                    break;
+
+                case Config.AES_256:
+                    aes(file, Zip4jConstants.AES_STRENGTH_256);
+                    break;
+
+                case Config.BASE_64:
                     encode64(file);
                     break;
 
                 case Config.REVERSE:
                     reverse(file);
-                    break;
-
-                case Config.COMPRESS:
-                    zip(file);
                     break;
 
                 default:
@@ -72,7 +79,7 @@ class Encrypter {
         Files.write(file.toPath(), encodedBytes);
     }
 
-    private void zip(File file) throws Exception {
+    private void aes(File file, int aesLevel) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
 
@@ -84,8 +91,8 @@ class Encrypter {
 
         zipParameters.setEncryptFiles(true);
         zipParameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
-        zipParameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
-        zipParameters.setPassword(Config.COMPRESS_PASSWORD);
+        zipParameters.setAesKeyStrength(aesLevel);
+        zipParameters.setPassword(Config.AES_KEY);
         zipFile.createZipFile(file, zipParameters);
 
         Files.delete(file.toPath());

@@ -7,7 +7,6 @@
       <change beforePath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Config.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Config.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Decrypter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Decrypter.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Encrypter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Encrypter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Inzcrypt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Inzcrypt.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Config.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Decrypter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Decrypter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Encrypter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Encrypter.java" afterDir="false" />

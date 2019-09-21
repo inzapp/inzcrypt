@@ -18,16 +18,18 @@ class Decrypter {
     void decrypt(File file) throws Exception {
         for (int i = Config.ORDER.length - 1; i >= 0; --i) {
             switch (Config.ORDER[i]) {
-                case Config.ENCODE_BASE64:
+                case Config.AES_128:
+                case Config.AES_192:
+                case Config.AES_256:
+                    decryptAes(file);
+                    break;
+
+                case Config.BASE_64:
                     decode64(file);
                     break;
 
                 case Config.REVERSE:
                     reverse(file);
-                    break;
-
-                case Config.COMPRESS:
-                    unZip(file);
                     break;
 
                 default:
@@ -58,13 +60,13 @@ class Decrypter {
         Files.write(file.toPath(), reversedBytes);
     }
 
-    private void unZip(File file) throws Exception {
+    private void decryptAes(File file) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
 
         ZipFile zipFile = new ZipFile(file);
         if (zipFile.isEncrypted())
-            zipFile.setPassword(Config.COMPRESS_PASSWORD);
+            zipFile.setPassword(Config.AES_KEY);
 
         File unzippedDir = new File(file.getAbsolutePath() + DIR);
         zipFile.extractFile("0", unzippedDir.getAbsolutePath());
