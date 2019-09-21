@@ -26,7 +26,7 @@ class Decrypter {
                     reverse(file);
                     break;
 
-                case Config.COMPRESS_WITH_PASSWORD:
+                case Config.COMPRESS:
                     unZip(file);
                     break;
 
@@ -41,14 +41,9 @@ class Decrypter {
         if (!file.exists())
             throw new FileNotFoundException();
 
-        StringBuilder contentBuilder = new StringBuilder();
-        List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
-        lines.forEach(contentBuilder::append);
-
-        byte[] decoded = Base64.getDecoder().decode(contentBuilder.toString());
-        String decodedContent = new String(decoded, StandardCharsets.UTF_8);
-
-        Files.write(file.toPath(), decodedContent.getBytes(StandardCharsets.UTF_8));
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        byte[] decodedBytes = Base64.getDecoder().decode(bytes);
+        Files.write(file.toPath(), decodedBytes);
     }
 
     private void reverse(File file) throws Exception {

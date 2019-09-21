@@ -30,7 +30,7 @@ class Encrypter {
                     reverse(file);
                     break;
 
-                case Config.COMPRESS_WITH_PASSWORD:
+                case Config.COMPRESS:
                     zip(file);
                     break;
 
@@ -67,14 +67,9 @@ class Encrypter {
         if (!file.exists())
             throw new FileNotFoundException();
 
-        StringBuilder contentBuilder = new StringBuilder();
-        List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
-        lines.forEach(line -> contentBuilder.append(line).append('\n'));
-
-        byte[] base64 = Base64.getEncoder().encode(contentBuilder.toString().getBytes(StandardCharsets.UTF_8));
-        String encodedFileContent = new String(base64, StandardCharsets.UTF_8);
-
-        Files.write(file.toPath(), encodedFileContent.getBytes(StandardCharsets.UTF_8));
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        byte[] encodedBytes = Base64.getEncoder().encode(bytes);
+        Files.write(file.toPath(), encodedBytes);
     }
 
     private void zip(File file) throws Exception {
