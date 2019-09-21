@@ -19,7 +19,6 @@ class Decrypter {
         for (int i = Config.ORDER.length - 1; i >= 0; --i) {
             switch (Config.ORDER[i]) {
                 case Config.AES_128:
-                case Config.AES_192:
                 case Config.AES_256:
                     decryptAes(file);
                     break;

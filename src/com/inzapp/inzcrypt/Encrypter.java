@@ -25,10 +25,6 @@ class Encrypter {
                     aes(file, Zip4jConstants.AES_STRENGTH_128);
                     break;
 
-                case Config.AES_192:
-                    aes(file, Zip4jConstants.AES_STRENGTH_192);
-                    break;
-
                 case Config.AES_256:
                     aes(file, Zip4jConstants.AES_STRENGTH_256);
                     break;
@@ -79,7 +75,7 @@ class Encrypter {
         Files.write(file.toPath(), encodedBytes);
     }
 
-    private void aes(File file, int aesLevel) throws Exception {
+    private void aes(File file, int aesStrength) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
 
@@ -91,7 +87,7 @@ class Encrypter {
 
         zipParameters.setEncryptFiles(true);
         zipParameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
-        zipParameters.setAesKeyStrength(aesLevel);
+        zipParameters.setAesKeyStrength(aesStrength);
         zipParameters.setPassword(Config.AES_KEY);
         zipFile.createZipFile(file, zipParameters);
 
