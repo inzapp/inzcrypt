@@ -27,6 +27,9 @@ class Decrypter {
                     decode64(file);
                     break;
 
+                case Config.CAESAR_64:
+                    caesar64(file);
+
                 case Config.REVERSE:
                     reverse(file);
                     break;
@@ -36,27 +39,6 @@ class Decrypter {
             }
         }
         renameToOriginalName(file);
-    }
-
-    private void decode64(File file) throws Exception {
-        if (!file.exists())
-            throw new FileNotFoundException();
-
-        byte[] bytes = Files.readAllBytes(file.toPath());
-        byte[] decodedBytes = Base64.getDecoder().decode(bytes);
-        Files.write(file.toPath(), decodedBytes);
-    }
-
-    private void reverse(File file) throws Exception {
-        if (!file.exists())
-            throw new FileNotFoundException();
-
-        byte[] bytes = Files.readAllBytes(file.toPath());
-        byte[] reversedBytes = new byte[bytes.length];
-        for (int i = bytes.length - 1, r = 0; i >= 0; --i, ++r)
-            reversedBytes[r] = bytes[i];
-
-        Files.write(file.toPath(), reversedBytes);
     }
 
     private void decryptAes(File file) throws Exception {
@@ -74,6 +56,39 @@ class Decrypter {
         Files.move(unzippedZeroFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
         Files.deleteIfExists(unzippedDir.toPath());
     }
+
+    private void decode64(File file) throws Exception {
+        if (!file.exists())
+            throw new FileNotFoundException();
+
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        byte[] decodedBytes = Base64.getDecoder().decode(bytes);
+        Files.write(file.toPath(), decodedBytes);
+    }
+
+    private void caesar64(File file) throws Exception {
+        if (!file.exists())
+            throw new FileNotFoundException();
+
+        byte[]  bytes = Files.readAllBytes(file.toPath());
+        for(int i=0; i<bytes.length; ++i)
+            bytes[i] = (byte) (((bytes[i] & 0xFF) - 64) % 0xFF);
+        Files.write(file.toPath(), bytes);
+    }
+
+    private void reverse(File file) throws Exception {
+        if (!file.exists())
+            throw new FileNotFoundException();
+
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        byte[] reversedBytes = new byte[bytes.length];
+        for (int i = bytes.length - 1, r = 0; i >= 0; --i, ++r)
+            reversedBytes[r] = bytes[i];
+
+        Files.write(file.toPath(), reversedBytes);
+    }
+
+
 
     private void renameToOriginalName(File file) throws Exception {
         if (!file.exists())

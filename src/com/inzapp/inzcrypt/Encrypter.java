@@ -33,6 +33,9 @@ class Encrypter {
                     encode64(file);
                     break;
 
+                case Config.CAESAR_64:
+                    caesar64(file);
+
                 case Config.REVERSE:
                     reverse(file);
                     break;
@@ -66,15 +69,6 @@ class Encrypter {
         return zeroFile;
     }
 
-    private void encode64(File file) throws Exception {
-        if (!file.exists())
-            throw new FileNotFoundException();
-
-        byte[] bytes = Files.readAllBytes(file.toPath());
-        byte[] encodedBytes = Base64.getEncoder().encode(bytes);
-        Files.write(file.toPath(), encodedBytes);
-    }
-
     private void aes(File file, int aesStrength) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
@@ -93,6 +87,25 @@ class Encrypter {
 
         Files.delete(file.toPath());
         Files.move(tmpFile.toPath(), file.toPath());
+    }
+
+    private void encode64(File file) throws Exception {
+        if (!file.exists())
+            throw new FileNotFoundException();
+
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        byte[] encodedBytes = Base64.getEncoder().encode(bytes);
+        Files.write(file.toPath(), encodedBytes);
+    }
+
+    private void caesar64(File file) throws Exception {
+        if (!file.exists())
+            throw new FileNotFoundException();
+
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        for (int i = 0; i < bytes.length; ++i)
+            bytes[i] = (byte) (((bytes[i] & 0xFF) + 64) % 0xFF);
+        Files.write(file.toPath(), bytes);
     }
 
     private void reverse(File file) throws Exception {
