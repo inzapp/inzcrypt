@@ -19,11 +19,11 @@ public class Encrypter {
         file = renameToZero(file);
         for (int i = 0; i < Config.ORDER.length; ++i) {
             switch (Config.ORDER[i]) {
-                case Config.ENCODE_64:
+                case Config.ENCODE_BASE64:
                     encode64(file);
                     break;
 
-                case Config.ZIP_PASSWORD:
+                case Config.COMPRESS_WITH_PASSWORD:
                     zip(file);
                     break;
 
@@ -108,7 +108,7 @@ public class Encrypter {
         zipParameters.setEncryptFiles(true);
         zipParameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
         zipParameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
-        zipParameters.setPassword(Config.key);
+        zipParameters.setPassword(Config.COMPRESS_PASSWORD);
         zipFile.createZipFile(file, zipParameters);
 
         file.delete();

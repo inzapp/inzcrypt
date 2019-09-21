@@ -1,24 +1,30 @@
 package com.inzapp.inzcrypt.core;
 
 import com.inzapp.inzcrypt.config.Config;
+import net.lingala.zip4j.core.ZipFile;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 
 public class Decrypter {
     private final String TMP = ".tmp";
+    private final String DIR = ".dir";
 
     public boolean decrypt(File file) throws Exception {
         for (int i = Config.ORDER.length - 1; i >= 0; --i) {
             switch (Config.ORDER[i]) {
-                case Config.ENCODE_64:
+                case Config.ENCODE_BASE64:
                     decode64(file);
                     break;
 
-                case Config.ZIP_PASSWORD:
+                case Config.COMPRESS_WITH_PASSWORD:
+                    unZip(file);
                     break;
 
                 default:
@@ -51,6 +57,27 @@ public class Decrypter {
 
         file.delete();
         new File(file.getAbsolutePath() + TMP).renameTo(file);
+    }
+
+    private void unZip(File file) throws Exception {
+        if (!file.exists())
+            throw new FileNotFoundException();
+
+        ZipFile zipFile = new ZipFile(file);
+        if (zipFile.isEncrypted())
+            zipFile.setPassword(Config.COMPRESS_PASSWORD);
+
+        File unzippedDir = new File(file.getAbsolutePath() + DIR);
+        zipFile.extractFile("0", unzippedDir.getAbsolutePath());
+
+        File unzippedZeroFie = Objects.requireNonNull(unzippedDir.listFiles())[0];
+        File tmpFile = new File(file.getAbsolutePath() + TMP);
+
+        Files.move(unzippedZeroFie.toPath(), tmpFile.toPath());
+        Files.deleteIfExists(unzippedDir.toPath());
+
+        Files.deleteIfExists(file.toPath());
+        Files.move(tmpFile.toPath(), file.toPath());
     }
 
     private boolean renameToOriginalName(File file) throws Exception {

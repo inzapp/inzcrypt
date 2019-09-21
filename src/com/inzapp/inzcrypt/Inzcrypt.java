@@ -9,12 +9,12 @@ public class Inzcrypt {
     public static void main(String[] args) {
         Inzcrypt inzcrypt = new Inzcrypt();
         try {
-//            if (inzcrypt.encrypt(new File("test.xml")))
-//                System.out.println("encrypt success");
-//            else System.out.println("encrypt failure");
+            if (inzcrypt.encrypt(new File("1.iml")))
+                System.out.println("encrypt success");
+            else System.out.println("encrypt failure");
 
 
-            if (inzcrypt.decrypt(new File("test.izc")))
+            if (inzcrypt.decrypt(new File("1.izc")))
                 System.out.println("decrypt success");
             else System.out.println("decrypt failure");
         } catch (Exception e) {
