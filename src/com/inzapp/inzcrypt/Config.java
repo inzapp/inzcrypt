@@ -7,6 +7,14 @@ class Config {
 
     static final String[] ORDER = new String[]{
             ENCODE_BASE64,
+            ENCODE_BASE64,
+            ENCODE_BASE64,
+            ENCODE_BASE64,
+            ENCODE_BASE64,
+            ENCODE_BASE64,
+            ENCODE_BASE64,
+            ENCODE_BASE64,
+            ENCODE_BASE64,
             COMPRESS_WITH_PASSWORD
     };
 }

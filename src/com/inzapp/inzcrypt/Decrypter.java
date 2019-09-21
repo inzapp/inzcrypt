@@ -60,6 +60,7 @@ class Decrypter {
 
         File unzippedZeroFile = Objects.requireNonNull(unzippedDir.listFiles())[0];
         Files.move(unzippedZeroFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        Files.deleteIfExists(unzippedDir.toPath());
     }
 
     private void renameToOriginalName(File file) throws Exception {
