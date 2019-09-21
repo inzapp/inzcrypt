@@ -1,6 +1,5 @@
 package com.inzapp.inzcrypt;
 
-import com.inzapp.inzcrypt.config.Config;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
