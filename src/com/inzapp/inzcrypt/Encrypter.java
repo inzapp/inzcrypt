@@ -26,6 +26,10 @@ class Encrypter {
                     encode64(file);
                     break;
 
+                case Config.REVERSE:
+                    reverse(file);
+                    break;
+
                 case Config.COMPRESS_WITH_PASSWORD:
                     zip(file);
                     break;
@@ -93,6 +97,17 @@ class Encrypter {
         Files.move(tmpFile.toPath(), file.toPath());
     }
 
+    private void reverse(File file) throws Exception {
+        if (!file.exists())
+            throw new FileNotFoundException();
+
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        byte[] reversedBytes = new byte[bytes.length];
+        for (int i = bytes.length - 1, r = 0; i >= 0; --i, ++r)
+            reversedBytes[r] = bytes[i];
+
+        Files.write(file.toPath(), reversedBytes);
+    }
 
     private String getFileNameWithoutExtension(File file) throws Exception {
         if (!file.exists())

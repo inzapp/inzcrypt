@@ -3,12 +3,15 @@
   <component name="ChangeListManager">
     <list default="true" id="ec78b75f-84e9-4034-b53b-d2c63d96564a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.iml" beforeDir="false" afterPath="$PROJECT_DIR$/1.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Config.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Config.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Decrypter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Decrypter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Encrypter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Encrypter.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Inzcrypt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Inzcrypt.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/config/Config.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/core/Decrypter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/core/Encrypter.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Config.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Decrypter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Decrypter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Encrypter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Encrypter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Inzcrypt.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Inzcrypt.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />

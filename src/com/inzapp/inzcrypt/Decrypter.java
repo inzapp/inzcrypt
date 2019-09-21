@@ -22,6 +22,10 @@ class Decrypter {
                     decode64(file);
                     break;
 
+                case Config.REVERSE:
+                    reverse(file);
+                    break;
+
                 case Config.COMPRESS_WITH_PASSWORD:
                     unZip(file);
                     break;
@@ -45,6 +49,18 @@ class Decrypter {
         String decodedContent = new String(decoded, StandardCharsets.UTF_8);
 
         Files.write(file.toPath(), decodedContent.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private void reverse(File file) throws Exception {
+        if (!file.exists())
+            throw new FileNotFoundException();
+
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        byte[] reversedBytes = new byte[bytes.length];
+        for (int i = bytes.length - 1, r = 0; i >= 0; --i, ++r)
+            reversedBytes[r] = bytes[i];
+
+        Files.write(file.toPath(), reversedBytes);
     }
 
     private void unZip(File file) throws Exception {
