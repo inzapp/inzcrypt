@@ -1,8 +1,5 @@
 package com.inzapp.inzcrypt;
 
-import com.inzapp.inzcrypt.core.Decrypter;
-import com.inzapp.inzcrypt.core.Encrypter;
-
 import java.io.File;
 
 public class Inzcrypt {

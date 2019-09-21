@@ -1,4 +1,4 @@
-package com.inzapp.inzcrypt.core;
+package com.inzapp.inzcrypt;
 
 import com.inzapp.inzcrypt.config.Config;
 import net.lingala.zip4j.core.ZipFile;
@@ -13,10 +13,10 @@ import java.nio.file.StandardOpenOption;
 import java.util.Base64;
 import java.util.List;
 
-public class Encrypter {
+class Encrypter {
     private final String TMP = ".tmp";
 
-    public void encrypt(File file) throws Exception {
+    void encrypt(File file) throws Exception {
         String fileNameWithExtension = file.getName();
         String fileNameWithoutExtension = getFileNameWithoutExtension(file);
         addOriginalFileNameToLastLine(file, fileNameWithExtension);

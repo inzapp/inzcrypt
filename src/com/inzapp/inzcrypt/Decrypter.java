@@ -1,4 +1,4 @@
-package com.inzapp.inzcrypt.core;
+package com.inzapp.inzcrypt;
 
 import com.inzapp.inzcrypt.config.Config;
 import net.lingala.zip4j.core.ZipFile;
@@ -12,11 +12,11 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
-public class Decrypter {
+class Decrypter {
     private final String TMP = ".tmp";
     private final String DIR = ".dir";
 
-    public void decrypt(File file) throws Exception {
+    void decrypt(File file) throws Exception {
         for (int i = Config.ORDER.length - 1; i >= 0; --i) {
             switch (Config.ORDER[i]) {
                 case Config.ENCODE_BASE64:
