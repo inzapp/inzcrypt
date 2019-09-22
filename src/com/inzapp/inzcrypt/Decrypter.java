@@ -70,9 +70,11 @@ class Decrypter {
         if (!file.exists())
             throw new FileNotFoundException();
 
-        byte[]  bytes = Files.readAllBytes(file.toPath());
-        for(int i=0; i<bytes.length; ++i)
-            bytes[i] = (byte) (((bytes[i] & 0xFF) - 64) % 0xFF);
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        for (int i = 0; i < bytes.length; ++i) {
+            byte b = (byte) (((bytes[i] & 0xFF) - 64));
+            bytes[i] = (byte) (b % 0xFF);
+        }
         Files.write(file.toPath(), bytes);
     }
 
@@ -87,8 +89,6 @@ class Decrypter {
 
         Files.write(file.toPath(), reversedBytes);
     }
-
-
 
     private void renameToOriginalName(File file) throws Exception {
         if (!file.exists())

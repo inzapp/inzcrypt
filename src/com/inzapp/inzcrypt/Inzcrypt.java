@@ -13,7 +13,7 @@ public class Inzcrypt {
 
     public static void main(String[] args) throws Exception {
         Inzcrypt inzcrypt = new Inzcrypt();
-        inzcrypt.encrypt(new File("1.iml"));
+//        inzcrypt.encrypt(new File("1.iml"));
         inzcrypt.decrypt(new File("1.izc"));
     }
 
