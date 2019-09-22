@@ -54,6 +54,7 @@ class Decrypter {
 
                 case Config.CAESAR_64:
                     caesar64(file);
+                    break;
 
                 case Config.REVERSE:
                     reverse(file);

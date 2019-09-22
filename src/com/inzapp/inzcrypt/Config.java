@@ -15,9 +15,7 @@ class Config {
     static final String REVERSE = "REVERSE";
 
     static final String[] ENCRYPT_LAYER = new String[]{
-            PRIVATE_MAP_1,
-            PRIVATE_MAP_2,
-            PRIVATE_MAP_3
+            CAESAR_64
     };
 
     static final byte[][] map1 = new byte[][]{
