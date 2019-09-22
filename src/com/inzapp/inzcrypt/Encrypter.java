@@ -19,6 +19,7 @@ class Encrypter {
     private final String TMP = ".tmp";
 
     void encrypt(File file) throws Exception {
+
         String fileNameWithExtension = file.getName();
         String fileNameWithoutExtension = getFileNameWithoutExtension(file);
         addOriginalFileNameToLastLine(file, fileNameWithExtension);
@@ -35,6 +36,10 @@ class Encrypter {
 
                 case Config.DES:
                     des(file);
+                    break;
+
+                case Config.BIT_CONVERSION:
+                    bitConversion(file);
                     break;
 
                 case Config.BASE_64:
@@ -90,7 +95,7 @@ class Encrypter {
         zipParameters.setEncryptFiles(true);
         zipParameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
         zipParameters.setAesKeyStrength(aesStrength);
-        zipParameters.setPassword(Config.AES_KEY);
+        zipParameters.setPassword(Config.KEY);
         zipFile.createZipFile(file, zipParameters);
 
         Files.delete(file.toPath());
@@ -99,13 +104,20 @@ class Encrypter {
 
     private void des(File file) throws Exception {
         Cipher cipher = Cipher.getInstance("DES");
-        DESKeySpec desKeySpec = new DESKeySpec("64bitkey".getBytes());
+        DESKeySpec desKeySpec = new DESKeySpec(Config.KEY.getBytes(StandardCharsets.UTF_8));
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
         Key key = secretKeyFactory.generateSecret(desKeySpec);
         cipher.init(Cipher.ENCRYPT_MODE, key);
         byte[] fileBytes = Files.readAllBytes(file.toPath());
         byte[] des = cipher.doFinal(fileBytes);
         Files.write(file.toPath(), des);
+    }
+
+    private void bitConversion(File file) throws Exception {
+        byte[] fileBytes = Files.readAllBytes(file.toPath());
+        for (int i = 0; i < fileBytes.length; ++i)
+            fileBytes[i] = (byte) (fileBytes[i] ^ Config.BIT_CONVERSION_KEY);
+        Files.write(file.toPath(), fileBytes);
     }
 
     private void base64(File file) throws Exception {

@@ -32,6 +32,10 @@ class Decrypter {
                     des(file);
                     break;
 
+                case Config.BIT_CONVERSION:
+                    bitConversion(file);
+                    break;
+
                 case Config.BASE_64:
                     base64(file);
                     break;
@@ -56,7 +60,7 @@ class Decrypter {
 
         ZipFile zipFile = new ZipFile(file);
         if (zipFile.isEncrypted())
-            zipFile.setPassword(Config.AES_KEY);
+            zipFile.setPassword(Config.KEY);
 
         File unzippedDir = new File(file.getAbsolutePath() + DIR);
         zipFile.extractFile("0", unzippedDir.getAbsolutePath());
@@ -68,12 +72,19 @@ class Decrypter {
 
     private void des(File file) throws Exception {
         Cipher cipher = Cipher.getInstance("DES");
-        DESKeySpec desKeySpec = new DESKeySpec("64bitkey".getBytes());
+        DESKeySpec desKeySpec = new DESKeySpec(Config.KEY.getBytes(StandardCharsets.UTF_8));
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
         Key key = secretKeyFactory.generateSecret(desKeySpec);
         cipher.init(Cipher.DECRYPT_MODE, key);
         byte[] des = Files.readAllBytes(file.toPath());
         byte[] fileBytes = cipher.doFinal(des);
+        Files.write(file.toPath(), fileBytes);
+    }
+
+    private void bitConversion(File file) throws Exception {
+        byte[] fileBytes = Files.readAllBytes(file.toPath());
+        for (int i = 0; i < fileBytes.length; ++i)
+            fileBytes[i] = (byte) (fileBytes[i] ^ Config.BIT_CONVERSION_KEY);
         Files.write(file.toPath(), fileBytes);
     }
 
