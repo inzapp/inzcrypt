@@ -19,7 +19,6 @@ class Encrypter {
     private final String TMP = ".tmp";
 
     void encrypt(File file) throws Exception {
-
         String fileNameWithExtension = file.getName();
         String fileNameWithoutExtension = getFileNameWithoutExtension(file);
         addOriginalFileNameToLastLine(file, fileNameWithExtension);
@@ -42,12 +41,25 @@ class Encrypter {
                     bitConversion(file);
                     break;
 
+                case Config.PRIVATE_MAP_1:
+                    privateMap(file, Config.map1);
+                    break;
+
+                case Config.PRIVATE_MAP_2:
+                    privateMap(file, Config.map2);
+                    break;
+
+                case Config.PRIVATE_MAP_3:
+                    privateMap(file, Config.map3);
+                    break;
+
                 case Config.BASE_64:
                     base64(file);
                     break;
 
                 case Config.CAESAR_64:
                     caesar64(file);
+                    break;
 
                 case Config.REVERSE:
                     reverse(file);
@@ -118,6 +130,21 @@ class Encrypter {
         for (int i = 0; i < fileBytes.length; ++i)
             fileBytes[i] = (byte) (fileBytes[i] ^ Config.BIT_CONVERSION_KEY);
         Files.write(file.toPath(), fileBytes);
+    }
+
+    private void privateMap(File file, byte[][] byteMap) throws Exception {
+        byte[] fileBytes = Files.readAllBytes(file.toPath());
+        for (int i = 0; i < fileBytes.length; ++i)
+            fileBytes[i] = getSecondValueFromMap(fileBytes[i], byteMap);
+        Files.write(file.toPath(), fileBytes);
+    }
+
+    private byte getSecondValueFromMap(byte b, byte[][] byteMap) {
+        for (byte[] bytes : byteMap) {
+            if (bytes[0] == b)
+                return bytes[1];
+        }
+        return Byte.MAX_VALUE;
     }
 
     private void base64(File file) throws Exception {
