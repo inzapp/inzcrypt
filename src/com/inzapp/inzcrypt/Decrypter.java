@@ -2,11 +2,15 @@ package com.inzapp.inzcrypt;
 
 import net.lingala.zip4j.core.ZipFile;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESKeySpec;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -17,15 +21,19 @@ class Decrypter {
     private final String DIR = ".dir";
 
     void decrypt(File file) throws Exception {
-        for (int i = Config.ORDER.length - 1; i >= 0; --i) {
-            switch (Config.ORDER[i]) {
+        for (int i = Config.ENCRYPT_LAYER.length - 1; i >= 0; --i) {
+            switch (Config.ENCRYPT_LAYER[i]) {
                 case Config.AES_128:
                 case Config.AES_256:
-                    decryptAes(file);
+                    aes(file);
+                    break;
+
+                case Config.DES:
+                    des(file);
                     break;
 
                 case Config.BASE_64:
-                    decode64(file);
+                    base64(file);
                     break;
 
                 case Config.CAESAR_64:
@@ -42,7 +50,7 @@ class Decrypter {
         renameToOriginalName(file);
     }
 
-    private void decryptAes(File file) throws Exception {
+    private void aes(File file) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
 
@@ -58,7 +66,18 @@ class Decrypter {
         Files.deleteIfExists(unzippedDir.toPath());
     }
 
-    private void decode64(File file) throws Exception {
+    private void des(File file) throws Exception {
+        Cipher cipher = Cipher.getInstance("DES");
+        DESKeySpec desKeySpec = new DESKeySpec("64bitkey".getBytes());
+        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
+        Key key = secretKeyFactory.generateSecret(desKeySpec);
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        byte[] des = Files.readAllBytes(file.toPath());
+        byte[] fileBytes = cipher.doFinal(des);
+        Files.write(file.toPath(), fileBytes);
+    }
+
+    private void base64(File file) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
 
@@ -109,7 +128,6 @@ class Decrypter {
             fileNameBytes[i] = reversedFileNameBytes.get(r);
 
         String originalFileNameWithExtension = new String(fileNameBytes, StandardCharsets.UTF_8);
-
         File tmpFile = new File(file.getAbsolutePath() + TMP);
         String fileContent = new String(fileBytes, StandardCharsets.UTF_8).trim();
         Files.write(tmpFile.toPath(), fileContent.getBytes(StandardCharsets.UTF_8));

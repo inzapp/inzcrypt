@@ -4,12 +4,15 @@ import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESKeySpec;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.security.Key;
 import java.util.Base64;
 
 class Encrypter {
@@ -20,8 +23,8 @@ class Encrypter {
         String fileNameWithoutExtension = getFileNameWithoutExtension(file);
         addOriginalFileNameToLastLine(file, fileNameWithExtension);
         file = renameToZero(file);
-        for (int i = 0; i < Config.ORDER.length; ++i) {
-            switch (Config.ORDER[i]) {
+        for (int i = 0; i < Config.ENCRYPT_LAYER.length; ++i) {
+            switch (Config.ENCRYPT_LAYER[i]) {
                 case Config.AES_128:
                     aes(file, Zip4jConstants.AES_STRENGTH_128);
                     break;
@@ -30,8 +33,12 @@ class Encrypter {
                     aes(file, Zip4jConstants.AES_STRENGTH_256);
                     break;
 
+                case Config.DES:
+                    des(file);
+                    break;
+
                 case Config.BASE_64:
-                    encode64(file);
+                    base64(file);
                     break;
 
                 case Config.CAESAR_64:
@@ -90,7 +97,18 @@ class Encrypter {
         Files.move(tmpFile.toPath(), file.toPath());
     }
 
-    private void encode64(File file) throws Exception {
+    private void des(File file) throws Exception {
+        Cipher cipher = Cipher.getInstance("DES");
+        DESKeySpec desKeySpec = new DESKeySpec("64bitkey".getBytes());
+        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
+        Key key = secretKeyFactory.generateSecret(desKeySpec);
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        byte[] fileBytes = Files.readAllBytes(file.toPath());
+        byte[] des = cipher.doFinal(fileBytes);
+        Files.write(file.toPath(), des);
+    }
+
+    private void base64(File file) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
 
