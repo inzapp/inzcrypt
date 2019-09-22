@@ -13,8 +13,9 @@ public class Inzcrypt {
 
     public static void main(String[] args) throws Exception {
         Inzcrypt inzcrypt = new Inzcrypt();
-//        inzcrypt.encrypt(new File("1.txt"));
-        inzcrypt.decrypt(new File("1.izc"));
+        if(new File("1.txt").exists())
+            inzcrypt.encrypt(new File("1.txt"));
+        else inzcrypt.decrypt(new File("1.izc"));
     }
 
     public void encrypt(File file) throws Exception {

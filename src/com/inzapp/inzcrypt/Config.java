@@ -15,7 +15,46 @@ class Config {
     static final String REVERSE = "REVERSE";
 
     static final String[] ENCRYPT_LAYER = new String[]{
-            CAESAR_64
+            AES_128,
+            AES_256,
+            DES,
+            BASE_64,
+            BIT_CONVERSION,
+            PRIVATE_MAP_1,
+            DES,
+            REVERSE,
+            BASE_64,
+            REVERSE,
+            BASE_64,
+            BIT_CONVERSION,
+            DES,
+            PRIVATE_MAP_2,
+            REVERSE,
+            BASE_64,
+            BIT_CONVERSION,
+            PRIVATE_MAP_2,
+            PRIVATE_MAP_1,
+            PRIVATE_MAP_3,
+            REVERSE,
+            BIT_CONVERSION,
+            REVERSE,
+            BASE_64,
+            REVERSE,
+            DES,
+            PRIVATE_MAP_3,
+            PRIVATE_MAP_1,
+            DES,
+            BASE_64,
+            BASE_64,
+            BIT_CONVERSION,
+            BASE_64,
+            PRIVATE_MAP_1,
+            CAESAR_64,
+            REVERSE,
+            PRIVATE_MAP_3,
+            REVERSE,
+            BASE_64,
+            BIT_CONVERSION
     };
 
     static final byte[][] map1 = new byte[][]{
