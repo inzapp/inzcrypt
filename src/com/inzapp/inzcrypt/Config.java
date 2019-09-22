@@ -7,8 +7,10 @@ class Config {
     static final String BASE_64 = "BASE_64";
     static final String CAESAR_64 = "CAESAR_64";
     static final String REVERSE = "REVERSE";
+
     static final String[] ORDER = new String[]{
             AES_256,
+            CAESAR_64,
             CAESAR_64
     };
 }

@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
@@ -94,14 +95,24 @@ class Decrypter {
         if (!file.exists())
             throw new FileNotFoundException();
 
-        List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
-        String originalFileNameWithExtension = lines.get(lines.size() - 1);
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < lines.size() - 1; ++i)
-            sb.append(lines.get(i)).append('\n');
+        byte[] fileBytes = Files.readAllBytes(file.toPath());
+        List<Byte> reversedFileNameBytes = new ArrayList<>();
+        for (int i = fileBytes.length - 1; i >= 0; --i) {
+            if (fileBytes[i] == '\n')
+                break;
+            reversedFileNameBytes.add(fileBytes[i]);
+            fileBytes[i] = ' ';
+        }
+
+        byte[] fileNameBytes = new byte[reversedFileNameBytes.size()];
+        for (int r = reversedFileNameBytes.size() - 1, i = 0; r >= 0; --r, ++i)
+            fileNameBytes[i] = reversedFileNameBytes.get(r);
+
+        String originalFileNameWithExtension = new String(fileNameBytes, StandardCharsets.UTF_8);
 
         File tmpFile = new File(file.getAbsolutePath() + TMP);
-        Files.write(tmpFile.toPath(), sb.toString().getBytes(StandardCharsets.UTF_8));
+        String fileContent = new String(fileBytes, StandardCharsets.UTF_8).trim();
+        Files.write(tmpFile.toPath(), fileContent.getBytes(StandardCharsets.UTF_8));
 
         StringBuilder originalPathBuilder = new StringBuilder();
         String[] iso = file.getAbsolutePath().split("\\\\");
