@@ -6,9 +6,9 @@ class Config {
     static final String AES_128 = "AES_128";
     static final String AES_256 = "AES_256";
     static final String DES = "DES";
-    static final String PRIVATE_MAP_1 = "PRIVATE_MAP_1";
-    static final String PRIVATE_MAP_2 = "PRIVATE_MAP_2";
-    static final String PRIVATE_MAP_3 = "PRIVATE_MAP_3";
+    static final String BYTE_MAP_1 = "BYTE_MAP_1";
+    static final String BYTE_MAP_2 = "BYTE_MAP_2";
+    static final String BYTE_MAP_3 = "BYTE_MAP_3";
     static final String BIT_CONVERSION = "BIT_CONVERSION";
     static final String BASE_64 = "BASE_64";
     static final String CAESAR_64 = "CAESAR_64";

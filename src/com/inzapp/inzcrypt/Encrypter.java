@@ -41,16 +41,16 @@ class Encrypter {
                     bitConversion(file);
                     break;
 
-                case Config.PRIVATE_MAP_1:
-                    privateMap(file, Config.map1);
+                case Config.BYTE_MAP_1:
+                    byteMap(file, Config.map1);
                     break;
 
-                case Config.PRIVATE_MAP_2:
-                    privateMap(file, Config.map2);
+                case Config.BYTE_MAP_2:
+                    byteMap(file, Config.map2);
                     break;
 
-                case Config.PRIVATE_MAP_3:
-                    privateMap(file, Config.map3);
+                case Config.BYTE_MAP_3:
+                    byteMap(file, Config.map3);
                     break;
 
                 case Config.BASE_64:
@@ -132,7 +132,7 @@ class Encrypter {
         Files.write(file.toPath(), bytes);
     }
 
-    private void privateMap(File file, byte[][] byteMap) throws Exception {
+    private void byteMap(File file, byte[][] byteMap) throws Exception {
         byte[] bytes = Files.readAllBytes(file.toPath());
         for (int i = 0; i < bytes.length; ++i)
             bytes[i] = getSecondValueFromMap(bytes[i], byteMap);
