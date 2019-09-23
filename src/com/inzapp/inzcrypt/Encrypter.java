@@ -169,7 +169,7 @@ class Encrypter {
         return bytes;
     }
 
-    private String getRandomGeneratedAESKey() {
+    public String getRandomGeneratedAESKey() {
         long seed = System.currentTimeMillis();
         Random random = new Random(seed);
         StringBuilder sb = new StringBuilder();
@@ -177,7 +177,7 @@ class Encrypter {
                 '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[',
                 ';', ':', '\'', '"', ',', '<', '.', '>', '/', '?', '\\', '|', '{', ']', '}'
         };
-        for (int i = 0; i < (Byte.MAX_VALUE & 0xFF); ++i) {
+        for (int i = 0; i < 32; ++i) {
             int rand = random.nextInt(4);
             switch (rand) {
                 case 0:
