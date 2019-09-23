@@ -294,6 +294,13 @@ class Encrypter {
         Files.write(file.toPath(), reversedBytes);
     }
 
+    private byte[] reverse2(byte[] bytes) throws Exception {
+        byte[] reversedBytes = new byte[bytes.length];
+        for (int i = bytes.length - 1, r = 0; i >= 0; --i, ++r)
+            reversedBytes[r] = bytes[i];
+        return reversedBytes;
+    }
+
     private String getFileNameWithoutExtension(File file) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
