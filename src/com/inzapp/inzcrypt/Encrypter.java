@@ -261,7 +261,7 @@ class Encrypter {
             if (bytes[0] == b)
                 return bytes[1];
         }
-        return Byte.MAX_VALUE;
+        return 0;
     }
 
     private void base64(File file) throws Exception {

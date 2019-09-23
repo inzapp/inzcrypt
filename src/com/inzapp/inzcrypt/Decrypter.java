@@ -144,7 +144,7 @@ class Decrypter {
         Files.write(file.toPath(), bytes);
     }
 
-    private byte[] bitConversion2(byte[] bytes) throws Exception {
+    private byte[] bitConversion2(byte[] bytes) {
         for (int i = 0; i < bytes.length; ++i)
             bytes[i] = (byte) (bytes[i] ^ Config.BIT_CONVERSION_KEY);
         return bytes;
@@ -157,7 +157,7 @@ class Decrypter {
         Files.write(file.toPath(), bytes);
     }
 
-    private byte[] byteMap2(byte[] bytes, byte[][] byteMap) throws Exception {
+    private byte[] byteMap2(byte[] bytes, byte[][] byteMap) {
         for (int i = 0; i < bytes.length; ++i)
             bytes[i] = getFirstValeFromMap(bytes[i], byteMap);
         return bytes;
@@ -168,7 +168,7 @@ class Decrypter {
             if (bytes[1] == b)
                 return bytes[0];
         }
-        return Byte.MAX_VALUE;
+        return 0;
     }
 
     private void base64(File file) throws Exception {
