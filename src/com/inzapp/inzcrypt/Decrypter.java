@@ -180,6 +180,10 @@ class Decrypter {
         Files.write(file.toPath(), decodedBytes);
     }
 
+    private byte[] base642(byte[] bytes) throws Exception {
+        return Base64.getDecoder().decode(bytes);
+    }
+
     private void caesar64(File file) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
