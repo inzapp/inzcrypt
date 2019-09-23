@@ -26,54 +26,69 @@ class Encrypter {
     void encrypt(File file) throws Exception {
         String fileNameWithExtension = file.getName();
         String fileNameWithoutExtension = getFileNameWithoutExtension(file);
-        addOriginalFileNameToLastLine(file, fileNameWithExtension);
-        file = renameToZero(file);
+
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        addOriginalFileNameToLastLine2(bytes, fileNameWithExtension);
+
+//        addOriginalFileNameToLastLine(file, fileNameWithExtension);
+//        file = renameToZero(file);
         for (int i = 0; i < Config.ENCRYPT_LAYER.length; ++i) {
             switch (Config.ENCRYPT_LAYER[i]) {
                 case Config.AES_128:
-                    aes(file, Zip4jConstants.AES_STRENGTH_128);
+//                    aes(file, Zip4jConstants.AES_STRENGTH_128);
+                    bytes = aes2(bytes);
                     break;
 
                 case Config.AES_256:
-                    aes(file, Zip4jConstants.AES_STRENGTH_256);
+                    bytes = aes2(bytes);
+//                    aes(file, Zip4jConstants.AES_STRENGTH_256);
                     break;
 
                 case Config.DES:
-                    des(file);
+//                    des(file);
+                    bytes = des2(bytes);
                     break;
 
                 case Config.BIT_CONVERSION:
-                    bitConversion(file);
+//                    bitConversion(file);
+                    bytes = bitConversion2(bytes);
                     break;
 
                 case Config.BYTE_MAP_1:
-                    byteMap(file, Config.map1);
+//                    byteMap(file, Config.map1);
+                    bytes = byteMap2(bytes, Config.map1);
                     break;
 
                 case Config.BYTE_MAP_2:
-                    byteMap(file, Config.map2);
+//                    byteMap(file, Config.map2);
+                    bytes = byteMap2(bytes, Config.map2);
                     break;
 
                 case Config.BYTE_MAP_3:
-                    byteMap(file, Config.map3);
+//                    byteMap(file, Config.map3);
+                    bytes = byteMap2(bytes, Config.map3);
                     break;
 
                 case Config.BASE_64:
-                    base64(file);
+//                    base64(file);
+                    bytes = base642(bytes);
                     break;
 
                 case Config.CAESAR_64:
-                    caesar64(file);
+//                    caesar64(file);
+                    caesar642(bytes);
                     break;
 
                 case Config.REVERSE:
-                    reverse(file);
+//                    reverse(file);
+                    bytes = reverse2(bytes);
                     break;
 
                 default:
                     break;
             }
         }
+        Files.write(file.toPath(), bytes);
         renameToIzcExtension(file, fileNameWithoutExtension);
     }
 
@@ -294,7 +309,7 @@ class Encrypter {
         Files.write(file.toPath(), reversedBytes);
     }
 
-    private byte[] reverse2(byte[] bytes) throws Exception {
+    private byte[] reverse2(byte[] bytes) {
         byte[] reversedBytes = new byte[bytes.length];
         for (int i = bytes.length - 1, r = 0; i >= 0; --i, ++r)
             reversedBytes[r] = bytes[i];
@@ -315,6 +330,20 @@ class Encrypter {
     }
 
     private void renameToIzcExtension(File file, String originalFileNameWithoutExtension) throws Exception {
+        if (!file.exists())
+            throw new FileNotFoundException();
+
+        String[] iso = file.getAbsolutePath().split("\\\\");
+        StringBuilder izcPathBuilder = new StringBuilder();
+        for (int i = 0; i < iso.length - 1; ++i)
+            izcPathBuilder.append(iso[i]).append('\\');
+        izcPathBuilder.append(originalFileNameWithoutExtension).append(".izc");
+
+        File izcFile = new File(izcPathBuilder.toString());
+        Files.move(file.toPath(), izcFile.toPath());
+    }
+
+    private void renameToIzcExtension2(File file, String originalFileNameWithoutExtension) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
 
