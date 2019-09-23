@@ -18,7 +18,7 @@ class Config {
             AES_256
     };
 
-    static final byte[][] map1 = new byte[][]{
+    static final byte[][] MAP_1 = new byte[][]{
             {-128, 27},
             {-127, 23},
             {-126, -95},
@@ -277,7 +277,7 @@ class Config {
             {127, -77}
     };
 
-    static final byte[][] map2 = new byte[][]{
+    static final byte[][] MAP_2 = new byte[][]{
             {-128, -89},
             {-127, -58},
             {-126, 109},
@@ -536,7 +536,7 @@ class Config {
             {127, 33}
     };
 
-    static final byte[][] map3 = new byte[][]{
+    static final byte[][] MAP_3 = new byte[][]{
             {-128, -5},
             {-127, 38},
             {-126, 46},

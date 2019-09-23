@@ -44,17 +44,17 @@ class Decrypter {
 
                 case Config.BYTE_MAP_1:
 //                    byteMap(file, Config.map1);
-                    bytes = byteMap2(bytes, Config.map1);
+                    bytes = byteMap2(bytes, Config.MAP_1);
                     break;
 
                 case Config.BYTE_MAP_2:
 //                    byteMap(file, Config.map2);
-                    bytes = byteMap2(bytes, Config.map2);
+                    bytes = byteMap2(bytes, Config.MAP_2);
                     break;
 
                 case Config.BYTE_MAP_3:
 //                    byteMap(file, Config.map3);
-                    bytes = byteMap2(bytes, Config.map3);
+                    bytes = byteMap2(bytes, Config.MAP_3);
                     break;
 
                 case Config.BASE_64:
@@ -76,6 +76,7 @@ class Decrypter {
                     break;
             }
         }
+        Files.write(file.toPath(), bytes);
         renameToOriginalName(file);
     }
 
