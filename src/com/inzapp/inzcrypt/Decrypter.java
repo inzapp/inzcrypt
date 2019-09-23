@@ -231,8 +231,8 @@ class Decrypter {
 
     private byte[] reverse2(byte[] bytes) {
         byte[] reversedBytes = new byte[bytes.length];
-        for (int i = bytes.length - 1, r = 0; i >= 0; --i, ++r)
-            reversedBytes[r] = bytes[i];
+        for (int dec = bytes.length - 1, inc = 0; dec >= 0; --dec, ++inc)
+            reversedBytes[inc] = bytes[dec];
         return reversedBytes;
     }
 
