@@ -157,6 +157,12 @@ class Decrypter {
         Files.write(file.toPath(), bytes);
     }
 
+    private byte[] byteMap2(byte[] bytes, byte[][] byteMap) throws Exception {
+        for (int i = 0; i < bytes.length; ++i)
+            bytes[i] = getFirstValeFromMap(bytes[i], byteMap);
+        return bytes;
+    }
+
     private byte getFirstValeFromMap(byte b, byte[][] byteMap) {
         for (byte[] bytes : byteMap) {
             if (bytes[1] == b)
