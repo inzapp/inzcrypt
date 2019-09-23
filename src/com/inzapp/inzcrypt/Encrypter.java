@@ -274,6 +274,14 @@ class Encrypter {
         Files.write(file.toPath(), bytes);
     }
 
+    private byte[] caesar642(byte[] bytes) throws Exception {
+        for (int i = 0; i < bytes.length; ++i) {
+            byte b = (byte) (((bytes[i] & 0xFF) + 64));
+            bytes[i] = (byte) (b % 0xFF);
+        }
+        return bytes;
+    }
+
     private void reverse(File file) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
