@@ -7,6 +7,7 @@ import net.lingala.zip4j.util.Zip4jConstants;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -136,12 +137,21 @@ class Encrypter {
         String key = getRandomGeneratedAESKey();
         String iv = key.substring(0, 16);
         byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
-        KeySpec keySpec = new SecretKeySpec(keyBytes, "AES");
+        Key keySpec = new SecretKeySpec(keyBytes, "AES");
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, );
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8)));
+
+        byte[] aes = cipher.doFinal(bytes);
+        List<Byte> byteList = new ArrayList<>();
+        for (byte b : aes)
+            byteList.add(b);
+        byteList.add((byte) '\n');
+        for(byte b : keyBytes)
+            byteList.add(b);
+        return null;
     }
 
-    private String getRandomGeneratedAESKey() {
+    public String getRandomGeneratedAESKey() {
         long seed = System.currentTimeMillis();
         Random random = new Random(seed);
         StringBuilder sb = new StringBuilder();
@@ -153,19 +163,21 @@ class Encrypter {
             int rand = random.nextInt(4);
             switch (rand) {
                 case 0:
-                    sb.append((char) random.nextInt('z' - 'a' + 1) + 'a');
+//                    sb.append((char) random.nextInt('z' - 'a' + 1) + 'a');
+                    sb.append((char) (random.nextInt('z' - 'a' + 1) + 'a'));
                     break;
 
                 case 1:
-                    sb.append((char) random.nextInt('Z' - 'A' + 1) + 'A');
+                    sb.append((char) (random.nextInt('Z' - 'A' + 1) + 'A'));
                     break;
 
                 case 2:
-                    sb.append((char) random.nextInt('9' - '0' + 1) + '0');
+                    sb.append((char) (random.nextInt('9' - '0' + 1) + '0'));
                     break;
 
                 case 3:
                     sb.append(specials[random.nextInt(specials.length)]);
+                    break;
             }
         }
         return sb.toString();
