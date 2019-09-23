@@ -5,6 +5,8 @@ import net.lingala.zip4j.core.ZipFile;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
@@ -83,6 +85,38 @@ class Decrypter {
         Files.deleteIfExists(unzippedDir.toPath());
     }
 
+    private byte[] aes2(byte[] bytes) throws Exception {
+        List<Byte> reversedEncryptedKey = new ArrayList<>();
+        for (int i = bytes.length - 1; i >= 0; --i) {
+            if (bytes[i] == '\n')
+                break;
+            reversedEncryptedKey.add(bytes[i]);
+            bytes[i] = 0;
+        }
+
+        byte[] encryptedKey = new byte[reversedEncryptedKey.size()];
+        for (int r = reversedEncryptedKey.size() - 1, i = 0; r >= 0; --r, ++i)
+            encryptedKey[i] = reversedEncryptedKey.get(r);
+
+        byte[] keyBytes = decryptAESKey(encryptedKey);
+        String keyStr = new String(keyBytes, StandardCharsets.UTF_8);
+        String iv = keyStr.substring(0, 16);
+        Key keySpec = new SecretKeySpec(keyBytes, "AES");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8)));
+        return cipher.doFinal(bytes);
+    }
+
+    private byte[] decryptAESKey(byte[] plainKey) throws Exception {
+        String key = Config.KEY;
+        String iv = key.substring(0, 16);
+        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+        Key keySpec = new SecretKeySpec(keyBytes, "AES");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8)));
+        return cipher.doFinal(plainKey);
+    }
+
     private void des(File file) throws Exception {
         Cipher cipher = Cipher.getInstance("DES");
         DESKeySpec desKeySpec = new DESKeySpec(Config.KEY.getBytes(StandardCharsets.UTF_8));
@@ -149,6 +183,13 @@ class Decrypter {
         Files.write(file.toPath(), reversedBytes);
     }
 
+    private byte[] reverse2(byte[] bytes) {
+        byte[] reversedBytes = new byte[bytes.length];
+        for (int i = bytes.length - 1, r = 0; i >= 0; --i, ++r)
+            reversedBytes[r] = bytes[i];
+        return reversedBytes;
+    }
+
     private void renameToOriginalName(File file) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
@@ -159,7 +200,7 @@ class Decrypter {
             if (bytes[i] == '\n')
                 break;
             reversedFileNameBytes.add(bytes[i]);
-            bytes[i] = ' ';
+            bytes[i] = 0;
         }
 
         byte[] fileNameBytes = new byte[reversedFileNameBytes.size()];
@@ -168,7 +209,7 @@ class Decrypter {
 
         String originalFileNameWithExtension = new String(fileNameBytes, StandardCharsets.UTF_8);
         File tmpFile = new File(file.getAbsolutePath() + TMP);
-        String fileContent = new String(bytes, StandardCharsets.UTF_8).trim();
+        String fileContent = new String(bytes, StandardCharsets.UTF_8)/*.trim()*/; // test for 0 byte
         Files.write(tmpFile.toPath(), fileContent.getBytes(StandardCharsets.UTF_8));
 
         StringBuilder originalPathBuilder = new StringBuilder();
