@@ -255,4 +255,34 @@ class Decrypter {
         Files.deleteIfExists(file.toPath());
         Files.move(tmpFile.toPath(), originalFile.toPath());
     }
+
+    private void renameToOriginalName2(File file, byte[] bytes) throws Exception {
+        List<Byte> reversedFileNameBytes = new ArrayList<>();
+        for (int i = bytes.length - 1; i >= 0; --i) {
+            if (bytes[i] == '\n')
+                break;
+            reversedFileNameBytes.add(bytes[i]);
+            bytes[i] = 0;
+        }
+
+        byte[] fileNameBytes = new byte[reversedFileNameBytes.size()];
+        for (int r = reversedFileNameBytes.size() - 1, i = 0; r >= 0; --r, ++i)
+            fileNameBytes[i] = reversedFileNameBytes.get(r);
+
+        String originalFileNameWithExtension = new String(fileNameBytes, StandardCharsets.UTF_8);
+        File tmpFile = new File(file.getAbsolutePath() + TMP);
+//        String fileContent = new String(bytes, StandardCharsets.UTF_8)/*.trim()*/; // test for 0 byte
+//        Files.write(tmpFile.toPath(), fileContent.getBytes(StandardCharsets.UTF_8));
+        Files.write(tmpFile.toPath(), bytes);
+
+        StringBuilder originalPathBuilder = new StringBuilder();
+        String[] iso = file.getAbsolutePath().split("\\\\");
+        for (int i = 0; i < iso.length - 1; ++i)
+            originalPathBuilder.append(iso[i]).append('\\');
+        originalPathBuilder.append(originalFileNameWithExtension);
+        File originalFile = new File(originalPathBuilder.toString());
+
+        Files.deleteIfExists(file.toPath());
+        Files.move(tmpFile.toPath(), originalFile.toPath());
+    }
 }
