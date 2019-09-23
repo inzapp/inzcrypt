@@ -9,6 +9,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -76,8 +77,9 @@ class Decrypter {
                     break;
             }
         }
-        bytes = renameToOriginalName2(file, bytes);
+        String originalName = getOriginalNameFromFileAndReplaceThemToZero(bytes);
         Files.write(file.toPath(), bytes);
+        renameToOriginalName(file, originalName);
     }
 
     private void aes(File file) throws Exception {
@@ -102,7 +104,7 @@ class Decrypter {
             if (bytes[i] == '\n')
                 break;
             reversedEncryptedKey.add(bytes[i]);
-//            bytes[i] = 0;
+            bytes[i] = 0;
         }
 
         byte[] encryptedKey = new byte[reversedEncryptedKey.size()];
@@ -269,28 +271,52 @@ class Decrypter {
         Files.move(tmpFile.toPath(), originalFile.toPath());
     }
 
-    private byte[] renameToOriginalName2(File file, byte[] bytes) throws Exception {
+    private String getOriginalNameFromFileAndReplaceThemToZero(byte[] bytes) {
         List<Byte> reversedFileNameBytes = new ArrayList<>();
         for (int i = bytes.length - 1; i >= 0; --i) {
             if (bytes[i] == '\n')
                 break;
             reversedFileNameBytes.add(bytes[i]);
-            bytes[i] = 0;
+            bytes[i] = 0; // changed bytes reference
         }
-
         byte[] fileNameBytes = new byte[reversedFileNameBytes.size()];
-        for (int r = reversedFileNameBytes.size() - 1, i = 0; r >= 0; --r, ++i)
-            fileNameBytes[i] = reversedFileNameBytes.get(r);
+        for (int dec = reversedFileNameBytes.size() - 1, inc = 0; dec >= 0; --dec, ++inc)
+            fileNameBytes[inc] = reversedFileNameBytes.get(dec);
+        return new String(fileNameBytes, StandardCharsets.UTF_8);
+    }
 
-        String originalFileNameWithExtension = new String(fileNameBytes, StandardCharsets.UTF_8);
+    private void renameToOriginalName(File file, String originalFileName) throws IOException {
         StringBuilder originalPathBuilder = new StringBuilder();
         String[] iso = file.getAbsolutePath().split("\\\\");
         for (int i = 0; i < iso.length - 1; ++i)
             originalPathBuilder.append(iso[i]).append('\\');
-        originalPathBuilder.append(originalFileNameWithExtension);
+        originalPathBuilder.append(originalFileName);
         File originalFile = new File(originalPathBuilder.toString());
         Files.move(file.toPath(), originalFile.toPath());
-
-        return bytes;
     }
+
+//    private byte[] renameToOriginalName2(File file, byte[] bytes) throws Exception {
+//        List<Byte> reversedFileNameBytes = new ArrayList<>();
+//        for (int i = bytes.length - 1; i >= 0; --i) {
+//            if (bytes[i] == '\n')
+//                break;
+//            reversedFileNameBytes.add(bytes[i]);
+//            bytes[i] = 0;
+//        }
+//
+//        byte[] fileNameBytes = new byte[reversedFileNameBytes.size()];
+//        for (int dec = reversedFileNameBytes.size() - 1, inc = 0; dec >= 0; --dec, ++inc)
+//            fileNameBytes[inc] = reversedFileNameBytes.get(dec);
+//
+//        String originalFileNameWithExtension = new String(fileNameBytes, StandardCharsets.UTF_8);
+//        StringBuilder originalPathBuilder = new StringBuilder();
+//        String[] iso = file.getAbsolutePath().split("\\\\");
+//        for (int i = 0; i < iso.length - 1; ++i)
+//            originalPathBuilder.append(iso[i]).append('\\');
+//        originalPathBuilder.append(originalFileNameWithExtension);
+//        File originalFile = new File(originalPathBuilder.toString());
+//        Files.move(file.toPath(), originalFile.toPath());
+//
+//        return bytes;
+//    }
 }

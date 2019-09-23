@@ -28,7 +28,7 @@ class Encrypter {
         String fileNameWithoutExtension = getFileNameWithoutExtension(file);
 
         byte[] bytes = Files.readAllBytes(file.toPath());
-        addOriginalFileNameToLastLine2(bytes, fileNameWithExtension);
+        bytes = addOriginalFileNameToLastLine2(bytes, fileNameWithExtension);
 
 //        addOriginalFileNameToLastLine(file, fileNameWithExtension);
 //        file = renameToZero(file);
@@ -289,7 +289,7 @@ class Encrypter {
         Files.write(file.toPath(), bytes);
     }
 
-    private byte[] caesar642(byte[] bytes) throws Exception {
+    private byte[] caesar642(byte[] bytes) {
         for (int i = 0; i < bytes.length; ++i) {
             byte b = (byte) (((bytes[i] & 0xFF) + 64));
             bytes[i] = (byte) (b % 0xFF);
