@@ -13,7 +13,7 @@ public class Inzcrypt {
 
     public static void main(String[] args) throws Exception {
         Inzcrypt inzcrypt = new Inzcrypt();
-        if(new File("1.txt").exists())
+        if (new File("1.txt").exists())
             inzcrypt.encrypt(new File("1.txt"));
         else inzcrypt.decrypt(new File("1.izc"));
     }

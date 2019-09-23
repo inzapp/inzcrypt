@@ -1,6 +1,8 @@
 <component name="ProjectDictionaryState">
   <dictionary name="inner">
     <words>
+      <w>hmac</w>
+      <w>pbkdf</w>
       <w>pkcs</w>
     </words>
   </dictionary>

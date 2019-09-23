@@ -5,16 +5,20 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.security.AlgorithmParameters;
 import java.security.Key;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -40,7 +44,8 @@ class Encrypter {
                     break;
 
                 case Config.AES_256:
-                    bytes = aes2(bytes);
+//                    bytes = aes2(bytes);
+                    bytes = encryptAES256(bytes);
 //                    aes(file, Zip4jConstants.AES_STRENGTH_256);
                     break;
 
@@ -161,12 +166,35 @@ class Encrypter {
             byteList.add(b);
         byteList.add((byte) '\n');
         byte[] encryptedKey = encryptAESKey(keyBytes);
+        encryptedKey = base642(encryptedKey);
         for (byte b : encryptedKey)
             byteList.add(b);
         bytes = new byte[byteList.size()];
         for (int i = 0; i < bytes.length; ++i)
             bytes[i] = byteList.get(i);
         return bytes;
+    }
+
+    private byte[] encryptAES256(byte[] bytes) throws Exception {
+        SecureRandom secureRandom = new SecureRandom();
+        byte[] saltBytes = new byte[20];
+        secureRandom.nextBytes(saltBytes);
+        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        PBEKeySpec pbeKeySpec = new PBEKeySpec(Config.KEY.toCharArray(), saltBytes, 70000, 256);
+        SecretKey secretKey = secretKeyFactory.generateSecret(pbeKeySpec);
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getEncoded(), "AES");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+        AlgorithmParameters algorithmParameters = cipher.getParameters();
+
+        byte[] ivBytes = algorithmParameters.getParameterSpec(IvParameterSpec.class).getIV();
+        byte[] encryptedTextBytes = cipher.doFinal(bytes);
+        byte[] buffer = new byte[saltBytes.length + ivBytes.length + encryptedTextBytes.length];
+
+        System.arraycopy(saltBytes, 0, buffer, 0, saltBytes.length);
+        System.arraycopy(ivBytes, 0, buffer, saltBytes.length, ivBytes.length);
+        System.arraycopy(encryptedTextBytes, 0, buffer, saltBytes.length + ivBytes.length, encryptedTextBytes.length);
+        return Base64.getEncoder().encode(buffer);
     }
 
     private String generateRandomAESKey() {

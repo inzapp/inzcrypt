@@ -3,13 +3,16 @@ package com.inzapp.inzcrypt;
 import net.lingala.zip4j.core.ZipFile;
 
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -30,7 +33,8 @@ class Decrypter {
                 case Config.AES_128:
                 case Config.AES_256:
 //                    aes(file);
-                    bytes = aes2(bytes);
+//                    bytes = aes2(bytes);
+                    bytes = decryptAES256(bytes);
                     break;
 
                 case Config.DES:
@@ -102,25 +106,52 @@ class Decrypter {
     private byte[] aes2(byte[] bytes) throws Exception {
         List<Byte> reversedEncryptedKey = new ArrayList<>();
         for (int i = bytes.length - 1; i >= 0; --i) {
-            if (bytes[i] == '\n')
+            if (bytes[i] == '\n') {
+                bytes[i] = ' ';
                 break;
+            }
             reversedEncryptedKey.add(bytes[i]);
-            bytes[i] = 0;
+            bytes[i] = ' ';
         }
+        bytes = new String(bytes, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
 
         byte[] encryptedKey = new byte[reversedEncryptedKey.size()];
         for (int r = reversedEncryptedKey.size() - 1, i = 0; r >= 0; --r, ++i)
             encryptedKey[i] = reversedEncryptedKey.get(r);
 
-        bytes = new String(bytes, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
-
+        encryptedKey = base642(encryptedKey);
         byte[] keyBytes = decryptAESKey(encryptedKey);
         String keyStr = new String(keyBytes, StandardCharsets.UTF_8);
+        System.out.println(keyStr);
+        System.out.println(keyStr.length());
+        System.out.println(keyBytes.length);
         String iv = keyStr.substring(0, 16);
         Key keySpec = new SecretKeySpec(keyBytes, "AES");
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8)));
+//        cipher.init(Cipher.DECRYPT_MODE, keySpec);
         return cipher.doFinal(bytes);
+    }
+
+    private byte[] decryptAES256(byte[] bytes) throws Exception {
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        ByteBuffer byteBuffer = ByteBuffer.wrap(Base64.getDecoder().decode(bytes));
+
+        byte[] saltBytes = new byte[20];
+        byteBuffer.get(saltBytes, 0, saltBytes.length);
+        byte[] ivBytes = new byte[cipher.getBlockSize()];
+        byteBuffer.get(ivBytes, 0, ivBytes.length);
+        byte[] encryptedTextBytes = new byte[byteBuffer.capacity() - saltBytes.length - ivBytes.length];
+        byteBuffer.get(encryptedTextBytes);
+
+        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        PBEKeySpec pbeKeySpec = new PBEKeySpec(Config.KEY.toCharArray(), saltBytes, 70000, 256);
+
+        SecretKey secretKey = secretKeyFactory.generateSecret(pbeKeySpec);
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getEncoded(), "AES");
+
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(ivBytes));
+        return cipher.doFinal(encryptedTextBytes);
     }
 
     private byte[] decryptAESKey(byte[] plainKey) throws Exception {
@@ -196,7 +227,7 @@ class Decrypter {
         Files.write(file.toPath(), decodedBytes);
     }
 
-    private byte[] base642(byte[] bytes) throws Exception {
+    private byte[] base642(byte[] bytes) {
         return Base64.getDecoder().decode(bytes);
     }
 
@@ -212,7 +243,7 @@ class Decrypter {
         Files.write(file.toPath(), bytes);
     }
 
-    private byte[] caesar642(byte[] bytes) throws Exception {
+    private byte[] caesar642(byte[] bytes) {
         for (int i = 0; i < bytes.length; ++i) {
             byte b = (byte) (((bytes[i] & 0xFF) - 64));
             bytes[i] = (byte) (b % 0xFF);
@@ -239,38 +270,38 @@ class Decrypter {
         return reversedBytes;
     }
 
-    private void renameToOriginalName(File file) throws Exception {
-        if (!file.exists())
-            throw new FileNotFoundException();
-
-        byte[] bytes = Files.readAllBytes(file.toPath());
-        List<Byte> reversedFileNameBytes = new ArrayList<>();
-        for (int i = bytes.length - 1; i >= 0; --i) {
-            if (bytes[i] == '\n')
-                break;
-            reversedFileNameBytes.add(bytes[i]);
-            bytes[i] = 0;
-        }
-
-        byte[] fileNameBytes = new byte[reversedFileNameBytes.size()];
-        for (int r = reversedFileNameBytes.size() - 1, i = 0; r >= 0; --r, ++i)
-            fileNameBytes[i] = reversedFileNameBytes.get(r);
-
-        String originalFileNameWithExtension = new String(fileNameBytes, StandardCharsets.UTF_8);
-        File tmpFile = new File(file.getAbsolutePath() + TMP);
-        String fileContent = new String(bytes, StandardCharsets.UTF_8)/*.trim()*/; // test for 0 byte
-        Files.write(tmpFile.toPath(), fileContent.getBytes(StandardCharsets.UTF_8));
-
-        StringBuilder originalPathBuilder = new StringBuilder();
-        String[] iso = file.getAbsolutePath().split("\\\\");
-        for (int i = 0; i < iso.length - 1; ++i)
-            originalPathBuilder.append(iso[i]).append('\\');
-        originalPathBuilder.append(originalFileNameWithExtension);
-        File originalFile = new File(originalPathBuilder.toString());
-
-        Files.deleteIfExists(file.toPath());
-        Files.move(tmpFile.toPath(), originalFile.toPath());
-    }
+//    private void renameToOriginalName(File file) throws Exception {
+//        if (!file.exists())
+//            throw new FileNotFoundException();
+//
+//        byte[] bytes = Files.readAllBytes(file.toPath());
+//        List<Byte> reversedFileNameBytes = new ArrayList<>();
+//        for (int i = bytes.length - 1; i >= 0; --i) {
+//            if (bytes[i] == '\n')
+//                break;
+//            reversedFileNameBytes.add(bytes[i]);
+//            bytes[i] = 0;
+//        }
+//
+//        byte[] fileNameBytes = new byte[reversedFileNameBytes.size()];
+//        for (int r = reversedFileNameBytes.size() - 1, i = 0; r >= 0; --r, ++i)
+//            fileNameBytes[i] = reversedFileNameBytes.get(r);
+//
+//        String originalFileNameWithExtension = new String(fileNameBytes, StandardCharsets.UTF_8);
+//        File tmpFile = new File(file.getAbsolutePath() + TMP);
+//        String fileContent = new String(bytes, StandardCharsets.UTF_8)/*.trim()*/; // test for 0 byte
+//        Files.write(tmpFile.toPath(), fileContent.getBytes(StandardCharsets.UTF_8));
+//
+//        StringBuilder originalPathBuilder = new StringBuilder();
+//        String[] iso = file.getAbsolutePath().split("\\\\");
+//        for (int i = 0; i < iso.length - 1; ++i)
+//            originalPathBuilder.append(iso[i]).append('\\');
+//        originalPathBuilder.append(originalFileNameWithExtension);
+//        File originalFile = new File(originalPathBuilder.toString());
+//
+//        Files.deleteIfExists(file.toPath());
+//        Files.move(tmpFile.toPath(), originalFile.toPath());
+//    }
 
     private String getOriginalNameFromFileAndReplaceThemToZero(byte[] bytes) {
         List<Byte> reversedFileNameBytes = new ArrayList<>();
