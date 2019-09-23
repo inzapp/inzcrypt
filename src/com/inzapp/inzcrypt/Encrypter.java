@@ -76,7 +76,7 @@ class Encrypter {
 
                 case Config.CAESAR_64:
 //                    caesar64(file);
-                    caesar642(bytes);
+                    bytes = caesar642(bytes);
                     break;
 
                 case Config.REVERSE:
@@ -148,7 +148,7 @@ class Encrypter {
     }
 
     private byte[] aes2(byte[] bytes) throws Exception {
-        String key = generateRandomAESKey(256);
+        String key = generateRandomAESKey();
         String iv = key.substring(0, 16);
         byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
         Key keySpec = new SecretKeySpec(keyBytes, "AES");
@@ -169,7 +169,7 @@ class Encrypter {
         return bytes;
     }
 
-    private String generateRandomAESKey(int bit) {
+    private String generateRandomAESKey() {
         long seed = System.currentTimeMillis();
         Random random = new Random(seed);
         StringBuilder sb = new StringBuilder();
@@ -177,7 +177,7 @@ class Encrypter {
                 '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[',
                 ';', ':', '\'', '"', ',', '<', '.', '>', '/', '?', '\\', '|', '{', ']', '}'
         };
-        for (int i = 0; i < (bit / 8); ++i) {
+        for (int i = 0; i < (256 / 8); ++i) {
             int rand = random.nextInt(4);
             switch (rand) {
                 case 0:

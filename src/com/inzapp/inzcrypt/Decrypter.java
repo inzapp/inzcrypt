@@ -112,7 +112,7 @@ class Decrypter {
         for (int r = reversedEncryptedKey.size() - 1, i = 0; r >= 0; --r, ++i)
             encryptedKey[i] = reversedEncryptedKey.get(r);
 
-//        bytes = new String(bytes, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
+        bytes = new String(bytes, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
 
         byte[] keyBytes = decryptAESKey(encryptedKey);
         String keyStr = new String(keyBytes, StandardCharsets.UTF_8);
