@@ -148,7 +148,7 @@ class Encrypter {
     }
 
     private byte[] aes2(byte[] bytes) throws Exception {
-        String key = getRandomGeneratedAESKey();
+        String key = generateRandomAESKey(256);
         String iv = key.substring(0, 16);
         byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
         Key keySpec = new SecretKeySpec(keyBytes, "AES");
@@ -169,7 +169,7 @@ class Encrypter {
         return bytes;
     }
 
-    public String getRandomGeneratedAESKey() {
+    private String generateRandomAESKey(int bit) {
         long seed = System.currentTimeMillis();
         Random random = new Random(seed);
         StringBuilder sb = new StringBuilder();
@@ -177,7 +177,7 @@ class Encrypter {
                 '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[',
                 ';', ':', '\'', '"', ',', '<', '.', '>', '/', '?', '\\', '|', '{', ']', '}'
         };
-        for (int i = 0; i < 32; ++i) {
+        for (int i = 0; i < (bit / 8); ++i) {
             int rand = random.nextInt(4);
             switch (rand) {
                 case 0:
