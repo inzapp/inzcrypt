@@ -76,8 +76,8 @@ class Decrypter {
                     break;
             }
         }
+        bytes = renameToOriginalName2(file, bytes);
         Files.write(file.toPath(), bytes);
-        renameToOriginalName(file);
     }
 
     private void aes(File file) throws Exception {
@@ -102,12 +102,14 @@ class Decrypter {
             if (bytes[i] == '\n')
                 break;
             reversedEncryptedKey.add(bytes[i]);
-            bytes[i] = 0;
+//            bytes[i] = 0;
         }
 
         byte[] encryptedKey = new byte[reversedEncryptedKey.size()];
         for (int r = reversedEncryptedKey.size() - 1, i = 0; r >= 0; --r, ++i)
             encryptedKey[i] = reversedEncryptedKey.get(r);
+
+//        bytes = new String(bytes, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
 
         byte[] keyBytes = decryptAESKey(encryptedKey);
         String keyStr = new String(keyBytes, StandardCharsets.UTF_8);
@@ -267,7 +269,7 @@ class Decrypter {
         Files.move(tmpFile.toPath(), originalFile.toPath());
     }
 
-    private void renameToOriginalName2(File file, byte[] bytes) throws Exception {
+    private byte[] renameToOriginalName2(File file, byte[] bytes) throws Exception {
         List<Byte> reversedFileNameBytes = new ArrayList<>();
         for (int i = bytes.length - 1; i >= 0; --i) {
             if (bytes[i] == '\n')
@@ -281,19 +283,14 @@ class Decrypter {
             fileNameBytes[i] = reversedFileNameBytes.get(r);
 
         String originalFileNameWithExtension = new String(fileNameBytes, StandardCharsets.UTF_8);
-        File tmpFile = new File(file.getAbsolutePath() + TMP);
-//        String fileContent = new String(bytes, StandardCharsets.UTF_8)/*.trim()*/; // test for 0 byte
-//        Files.write(tmpFile.toPath(), fileContent.getBytes(StandardCharsets.UTF_8));
-        Files.write(tmpFile.toPath(), bytes);
-
         StringBuilder originalPathBuilder = new StringBuilder();
         String[] iso = file.getAbsolutePath().split("\\\\");
         for (int i = 0; i < iso.length - 1; ++i)
             originalPathBuilder.append(iso[i]).append('\\');
         originalPathBuilder.append(originalFileNameWithExtension);
         File originalFile = new File(originalPathBuilder.toString());
+        Files.move(file.toPath(), originalFile.toPath());
 
-        Files.deleteIfExists(file.toPath());
-        Files.move(tmpFile.toPath(), originalFile.toPath());
+        return bytes;
     }
 }
