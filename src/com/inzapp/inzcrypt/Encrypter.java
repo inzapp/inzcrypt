@@ -206,6 +206,15 @@ class Encrypter {
         Files.write(file.toPath(), des);
     }
 
+    private byte[] des2(byte[] bytes) throws Exception {
+        Cipher cipher = Cipher.getInstance("DES");
+        DESKeySpec desKeySpec = new DESKeySpec(Config.KEY.getBytes(StandardCharsets.UTF_8));
+        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
+        Key key = secretKeyFactory.generateSecret(desKeySpec);
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        return cipher.doFinal(bytes);
+    }
+
     private void bitConversion(File file) throws Exception {
         byte[] bytes = Files.readAllBytes(file.toPath());
         for (int i = 0; i < bytes.length; ++i)
