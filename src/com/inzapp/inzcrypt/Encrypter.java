@@ -9,7 +9,6 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.AlgorithmParameters;
@@ -31,7 +30,8 @@ class Encrypter {
         for (int i = 0; i < Config.ENCRYPT_LAYER.length; ++i) {
             switch (Config.ENCRYPT_LAYER[i]) {
                 case Config.AES_256:
-                    bytes = aes256(bytes);
+//                    bytes = aes256(bytes);
+                    bytes = aes256Test(bytes);
                     break;
 
                 case Config.DES:
@@ -109,7 +109,7 @@ class Encrypter {
         return Base64.getEncoder().encode(buffer);
     }
 
-    private byte[] aesTest(byte[] bytes) throws Exception {
+    private byte[] aes256Test(byte[] bytes) throws Exception {
         String randomAESKey = generateRandomAESKey();
         byte[] randomAESKeyBytes = randomAESKey.getBytes(StandardCharsets.UTF_8);
         SecretKeySpec secretKeySpec = new SecretKeySpec(randomAESKeyBytes, "AES");
@@ -120,34 +120,10 @@ class Encrypter {
         cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
 
         bytes = cipher.doFinal(bytes);
-        return addAESKeyToLastLine(bytes, randomAESKeyBytes);
+        return appendAESKeyToLastLine(bytes, randomAESKeyBytes);
     }
 
-    private byte[] addAESKeyToLastLine(byte[] bytes, byte[] key) throws Exception {
-        key = aesKeyTest(key);
-        key = base64(key);
-        byte[] newBytes = new byte[bytes.length + 1 + key.length];
-        byte[] newLine = new byte[]{'\n'};
-        System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
-        System.arraycopy(newLine, 0, newBytes, bytes.length, newLine.length);
-        System.arraycopy(key, 0, newBytes, bytes.length + newLine.length, key.length);
-        return newBytes;
-    }
-
-    private byte[] aesKeyTest(byte[] bytes) throws Exception {
-        String key = Config.KEY;
-        byte[] randomAESKeyBytes = key.getBytes(StandardCharsets.UTF_8);
-        SecretKeySpec secretKeySpec = new SecretKeySpec(randomAESKeyBytes, "AES");
-
-        String iv = key.substring(0, 16);
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
-
-        return cipher.doFinal(bytes);
-    }
-
-    public static String generateRandomAESKey() {
+    private String generateRandomAESKey() {
         StringBuilder sb = new StringBuilder();
         Random random = new Random(System.currentTimeMillis());
         char[] specials = new char[]{
@@ -179,6 +155,31 @@ class Encrypter {
         }
         return sb.toString();
     }
+
+    private byte[] appendAESKeyToLastLine(byte[] bytes, byte[] keyBytes) throws Exception {
+        keyBytes = encryptKey(keyBytes);
+        keyBytes = base64(keyBytes);
+        byte[] newBytes = new byte[bytes.length + 1 + keyBytes.length];
+        byte[] newLine = new byte[]{'\n'};
+        System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
+        System.arraycopy(newLine, 0, newBytes, bytes.length, newLine.length);
+        System.arraycopy(keyBytes, 0, newBytes, bytes.length + newLine.length, keyBytes.length);
+        return newBytes;
+    }
+
+    private byte[] encryptKey(byte[] keyBytes) throws Exception {
+        String key = Config.KEY;
+        byte[] randomAESKeyBytes = key.getBytes(StandardCharsets.UTF_8);
+        SecretKeySpec secretKeySpec = new SecretKeySpec(randomAESKeyBytes, "AES");
+
+        String iv = key.substring(0, 16);
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
+
+        return cipher.doFinal(keyBytes);
+    }
+
 
     private byte[] des(byte[] bytes) throws Exception {
         Cipher cipher = Cipher.getInstance("DES");
