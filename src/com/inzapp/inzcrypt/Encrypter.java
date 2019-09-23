@@ -174,8 +174,8 @@ class Encrypter {
 
         String iv = key.substring(0, 16);
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec/*, ivParameterSpec*/);
 
         return cipher.doFinal(keyBytes);
     }

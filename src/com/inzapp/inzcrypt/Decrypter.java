@@ -102,8 +102,8 @@ class Decrypter {
         String iv = decryptedKey.substring(0, 16);
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
 
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec/*, ivParameterSpec*/);
         return cipher.doFinal(bytes);
     }
 
@@ -135,8 +135,8 @@ class Decrypter {
         String iv = key.substring(0, 16);
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
 
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec/*, ivParameterSpec*/);
 
         System.out.println(encryptedKey); // TODO
         byte[] encryptedKeyBytes = encryptedKey.getBytes(StandardCharsets.UTF_8);
