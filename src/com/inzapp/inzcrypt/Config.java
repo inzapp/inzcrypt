@@ -1,7 +1,7 @@
 package com.inzapp.inzcrypt;
 
 class Config {
-    static final String KEY = "KEY_QUVTX0tFWV8xOTIzODczODkzODc0";
+    static final String KEY = "FJRt04VaSb[jF20dL{i5a)H9^sRNkl4j}8pw'J#L,5d6s6gIwr2DpC(b38wj_7qhk\",VR34%u<W%!h2[+gB&!8n3:_kQu&OK|.yu6A*0,n^w93478vXy@7K.c8w^6>Y";
     static final long BIT_CONVERSION_KEY = 200823992740002938L;
     static final String AES_128 = "AES_128";
     static final String AES_256 = "AES_256";

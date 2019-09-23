@@ -15,7 +15,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.security.Key;
-import java.security.spec.KeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -146,12 +145,16 @@ class Encrypter {
         for (byte b : aes)
             byteList.add(b);
         byteList.add((byte) '\n');
-        for(byte b : keyBytes)
+        byte[] encryptedKey = encryptAESKey(keyBytes);
+        for (byte b : encryptedKey)
             byteList.add(b);
-        return null;
+        bytes = new byte[byteList.size()];
+        for (int i = 0; i < bytes.length; ++i)
+            bytes[i] = byteList.get(i);
+        return bytes;
     }
 
-    public String getRandomGeneratedAESKey() {
+    private String getRandomGeneratedAESKey() {
         long seed = System.currentTimeMillis();
         Random random = new Random(seed);
         StringBuilder sb = new StringBuilder();
@@ -163,7 +166,6 @@ class Encrypter {
             int rand = random.nextInt(4);
             switch (rand) {
                 case 0:
-//                    sb.append((char) random.nextInt('z' - 'a' + 1) + 'a');
                     sb.append((char) (random.nextInt('z' - 'a' + 1) + 'a'));
                     break;
 
@@ -181,6 +183,16 @@ class Encrypter {
             }
         }
         return sb.toString();
+    }
+
+    private byte[] encryptAESKey(byte[] plainKey) throws Exception {
+        String key = Config.KEY;
+        String iv = key.substring(0, 16);
+        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+        Key keySpec = new SecretKeySpec(keyBytes, "AES");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8)));
+        return cipher.doFinal(plainKey);
     }
 
     private void des(File file) throws Exception {
