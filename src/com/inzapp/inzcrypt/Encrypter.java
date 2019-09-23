@@ -7,13 +7,18 @@ import net.lingala.zip4j.util.Zip4jConstants;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.security.Key;
+import java.security.spec.KeySpec;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
+import java.util.Random;
 
 class Encrypter {
     private final String TMP = ".tmp";
@@ -79,6 +84,19 @@ class Encrypter {
         Files.write(file.toPath(), ('\n' + fileNameWithExtension).getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
     }
 
+    private byte[] addOriginalFileNameToLastLine2(byte[] bytes, String originalFileNameWithExtension) {
+        List<Byte> byteList = new ArrayList<>();
+        for (byte b : bytes)
+            byteList.add(b);
+        byte[] fileNameBytes = ('\n' + originalFileNameWithExtension).getBytes(StandardCharsets.UTF_8);
+        for (byte b : fileNameBytes)
+            byteList.add(b);
+        bytes = new byte[byteList.size()];
+        for (int i = 0; i < bytes.length; ++i)
+            bytes[i] = byteList.get(i);
+        return bytes;
+    }
+
     private File renameToZero(File file) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
@@ -112,6 +130,44 @@ class Encrypter {
 
         Files.delete(file.toPath());
         Files.move(tmpFile.toPath(), file.toPath());
+    }
+
+    private byte[] aes2(byte[] bytes) throws Exception {
+        String key = getRandomGeneratedAESKey();
+        String iv = key.substring(0, 16);
+        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+        KeySpec keySpec = new SecretKeySpec(keyBytes, "AES");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, );
+    }
+
+    private String getRandomGeneratedAESKey() {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        char[] specials = new char[]{
+                '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[',
+                ';', ':', '\'', '"', ',', '<', '.', '>', '/', '?', '\\', '|', '{', ']', '}'
+        };
+        for (int i = 0; i < (Byte.MAX_VALUE & 0xFF); ++i) {
+            int rand = random.nextInt(4);
+            switch (rand) {
+                case 0:
+                    sb.append((char) random.nextInt('z' - 'a' + 1) + 'a');
+                    break;
+
+                case 1:
+                    sb.append((char) random.nextInt('Z' - 'A' + 1) + 'A');
+                    break;
+
+                case 2:
+                    sb.append((char) random.nextInt('9' - '0' + 1) + '0');
+                    break;
+
+                case 3:
+                    sb.append(specials[random.nextInt(specials.length)]);
+            }
+        }
+        return sb.toString();
     }
 
     private void des(File file) throws Exception {
