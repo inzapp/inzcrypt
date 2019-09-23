@@ -78,6 +78,7 @@ class Decrypter {
             }
         }
         String originalName = getOriginalNameFromFileAndReplaceThemToZero(bytes);
+        bytes = new String(bytes, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
         Files.write(file.toPath(), bytes);
         renameToOriginalName(file, originalName);
     }
@@ -277,7 +278,7 @@ class Decrypter {
             if (bytes[i] == '\n')
                 break;
             reversedFileNameBytes.add(bytes[i]);
-            bytes[i] = 0; // changed bytes reference
+            bytes[i] = 0; // change bytes references value
         }
         byte[] fileNameBytes = new byte[reversedFileNameBytes.size()];
         for (int dec = reversedFileNameBytes.size() - 1, inc = 0; dec >= 0; --dec, ++inc)
