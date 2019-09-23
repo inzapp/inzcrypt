@@ -142,7 +142,8 @@ class Encrypter {
     }
 
     private String getRandomGeneratedAESKey() {
-        Random random = new Random();
+        long seed = System.currentTimeMillis();
+        Random random = new Random(seed);
         StringBuilder sb = new StringBuilder();
         char[] specials = new char[]{
                 '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[',
