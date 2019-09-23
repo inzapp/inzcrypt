@@ -258,6 +258,10 @@ class Encrypter {
         Files.write(file.toPath(), encodedBytes);
     }
 
+    private byte[] base642(byte[] bytes) throws Exception {
+        return Base64.getEncoder().encode(bytes);
+    }
+
     private void caesar64(File file) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
