@@ -120,23 +120,23 @@ class Encrypter {
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
         Key key = secretKeyFactory.generateSecret(desKeySpec);
         cipher.init(Cipher.ENCRYPT_MODE, key);
-        byte[] fileBytes = Files.readAllBytes(file.toPath());
-        byte[] des = cipher.doFinal(fileBytes);
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        byte[] des = cipher.doFinal(bytes);
         Files.write(file.toPath(), des);
     }
 
     private void bitConversion(File file) throws Exception {
-        byte[] fileBytes = Files.readAllBytes(file.toPath());
-        for (int i = 0; i < fileBytes.length; ++i)
-            fileBytes[i] = (byte) (fileBytes[i] ^ Config.BIT_CONVERSION_KEY);
-        Files.write(file.toPath(), fileBytes);
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        for (int i = 0; i < bytes.length; ++i)
+            bytes[i] = (byte) (bytes[i] ^ Config.BIT_CONVERSION_KEY);
+        Files.write(file.toPath(), bytes);
     }
 
     private void privateMap(File file, byte[][] byteMap) throws Exception {
-        byte[] fileBytes = Files.readAllBytes(file.toPath());
-        for (int i = 0; i < fileBytes.length; ++i)
-            fileBytes[i] = getSecondValueFromMap(fileBytes[i], byteMap);
-        Files.write(file.toPath(), fileBytes);
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        for (int i = 0; i < bytes.length; ++i)
+            bytes[i] = getSecondValueFromMap(bytes[i], byteMap);
+        Files.write(file.toPath(), bytes);
     }
 
     private byte getSecondValueFromMap(byte b, byte[][] byteMap) {

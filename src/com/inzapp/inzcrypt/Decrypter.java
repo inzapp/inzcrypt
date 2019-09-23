@@ -90,22 +90,22 @@ class Decrypter {
         Key key = secretKeyFactory.generateSecret(desKeySpec);
         cipher.init(Cipher.DECRYPT_MODE, key);
         byte[] des = Files.readAllBytes(file.toPath());
-        byte[] fileBytes = cipher.doFinal(des);
-        Files.write(file.toPath(), fileBytes);
+        byte[] bytes = cipher.doFinal(des);
+        Files.write(file.toPath(), bytes);
     }
 
     private void bitConversion(File file) throws Exception {
-        byte[] fileBytes = Files.readAllBytes(file.toPath());
-        for (int i = 0; i < fileBytes.length; ++i)
-            fileBytes[i] = (byte) (fileBytes[i] ^ Config.BIT_CONVERSION_KEY);
-        Files.write(file.toPath(), fileBytes);
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        for (int i = 0; i < bytes.length; ++i)
+            bytes[i] = (byte) (bytes[i] ^ Config.BIT_CONVERSION_KEY);
+        Files.write(file.toPath(), bytes);
     }
 
     private void privateMap(File file, byte[][] byteMap) throws Exception {
-        byte[] fileBytes = Files.readAllBytes(file.toPath());
-        for (int i = 0; i < fileBytes.length; ++i)
-            fileBytes[i] = getFirstValeFromMap(fileBytes[i], byteMap);
-        Files.write(file.toPath(), fileBytes);
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        for (int i = 0; i < bytes.length; ++i)
+            bytes[i] = getFirstValeFromMap(bytes[i], byteMap);
+        Files.write(file.toPath(), bytes);
     }
 
     private byte getFirstValeFromMap(byte b, byte[][] byteMap) {
@@ -153,13 +153,13 @@ class Decrypter {
         if (!file.exists())
             throw new FileNotFoundException();
 
-        byte[] fileBytes = Files.readAllBytes(file.toPath());
+        byte[] bytes = Files.readAllBytes(file.toPath());
         List<Byte> reversedFileNameBytes = new ArrayList<>();
-        for (int i = fileBytes.length - 1; i >= 0; --i) {
-            if (fileBytes[i] == '\n')
+        for (int i = bytes.length - 1; i >= 0; --i) {
+            if (bytes[i] == '\n')
                 break;
-            reversedFileNameBytes.add(fileBytes[i]);
-            fileBytes[i] = ' ';
+            reversedFileNameBytes.add(bytes[i]);
+            bytes[i] = ' ';
         }
 
         byte[] fileNameBytes = new byte[reversedFileNameBytes.size()];
@@ -168,7 +168,7 @@ class Decrypter {
 
         String originalFileNameWithExtension = new String(fileNameBytes, StandardCharsets.UTF_8);
         File tmpFile = new File(file.getAbsolutePath() + TMP);
-        String fileContent = new String(fileBytes, StandardCharsets.UTF_8).trim();
+        String fileContent = new String(bytes, StandardCharsets.UTF_8).trim();
         Files.write(tmpFile.toPath(), fileContent.getBytes(StandardCharsets.UTF_8));
 
         StringBuilder originalPathBuilder = new StringBuilder();
