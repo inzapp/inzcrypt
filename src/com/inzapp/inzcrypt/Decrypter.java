@@ -144,6 +144,12 @@ class Decrypter {
         Files.write(file.toPath(), bytes);
     }
 
+    private byte[] bitConversion2(byte[] bytes) throws Exception {
+        for (int i = 0; i < bytes.length; ++i)
+            bytes[i] = (byte) (bytes[i] ^ Config.BIT_CONVERSION_KEY);
+        return bytes;
+    }
+
     private void byteMap(File file, byte[][] byteMap) throws Exception {
         byte[] bytes = Files.readAllBytes(file.toPath());
         for (int i = 0; i < bytes.length; ++i)
