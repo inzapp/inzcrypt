@@ -18,48 +18,44 @@ import java.util.Base64;
 import java.util.List;
 
 class Decrypter {
-    private final String TMP = ".tmp";
-    private final String DIR = ".dir";
-
     void decrypt(File file) throws Exception {
         byte[] bytes = Files.readAllBytes(file.toPath());
         for (int i = Config.ENCRYPT_LAYER.length - 1; i >= 0; --i) {
             switch (Config.ENCRYPT_LAYER[i]) {
-                case Config.AES_128:
                 case Config.AES_256:
                     bytes = aes256(bytes);
                     break;
 
                 case Config.DES:
-                    bytes = des2(bytes);
+                    bytes = des(bytes);
                     break;
 
                 case Config.BIT_CONVERSION:
-                    bytes = bitConversion2(bytes);
+                    bytes = bitConversion(bytes);
                     break;
 
                 case Config.BYTE_MAP_1:
-                    bytes = byteMap2(bytes, Config.MAP_1);
+                    bytes = byteMap(bytes, Config.MAP_1);
                     break;
 
                 case Config.BYTE_MAP_2:
-                    bytes = byteMap2(bytes, Config.MAP_2);
+                    bytes = byteMap(bytes, Config.MAP_2);
                     break;
 
                 case Config.BYTE_MAP_3:
-                    bytes = byteMap2(bytes, Config.MAP_3);
+                    bytes = byteMap(bytes, Config.MAP_3);
                     break;
 
                 case Config.BASE_64:
-                    bytes = base642(bytes);
+                    bytes = base64(bytes);
                     break;
 
                 case Config.CAESAR_64:
-                    bytes = caesar642(bytes);
+                    bytes = caesar64(bytes);
                     break;
 
                 case Config.REVERSE:
-                    bytes = reverse2(bytes);
+                    bytes = reverse(bytes);
                     break;
 
                 default:
@@ -84,7 +80,7 @@ class Decrypter {
         byteBuffer.get(encryptedTextBytes);
 
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        PBEKeySpec pbeKeySpec = new PBEKeySpec(Config.KEY.toCharArray(), saltBytes, 70000, 256);
+        PBEKeySpec pbeKeySpec = new PBEKeySpec(Config.KEY.toCharArray(), saltBytes, 64, 256);
 
         SecretKey secretKey = secretKeyFactory.generateSecret(pbeKeySpec);
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getEncoded(), "AES");
@@ -93,7 +89,47 @@ class Decrypter {
         return cipher.doFinal(encryptedTextBytes);
     }
 
-    private byte[] des2(byte[] bytes) throws Exception {
+    private byte[] aes256Test(byte[] bytes) throws Exception {
+        String encryptedKey = getEncryptedKeyFromLastLine(bytes);
+        bytes = removeLastLine(bytes);
+        String decryptedKey = decryptKey(encryptedKey);
+    }
+
+    private String getEncryptedKeyFromLastLine(byte[] bytes) {
+        List<Byte> reversedByteList = new ArrayList<>();
+        for (int i = bytes.length - 1; i >= 0; --i) {
+            if (bytes[i] == '\n') {
+                bytes[i] = ' ';
+                break;
+            }
+            reversedByteList.add(bytes[i]);
+            bytes[i] = ' ';
+        }
+        byte[] encryptedKeyBytes = new byte[reversedByteList.size()];
+        for (int dec = reversedByteList.size() - 1, inc = 0; dec >= 0; --dec, ++inc)
+            encryptedKeyBytes[inc] = reversedByteList.get(dec);
+        return new String(encryptedKeyBytes, StandardCharsets.UTF_8);
+    }
+
+    private byte[] removeLastLine(byte[] bytes) {
+        return new String(bytes, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
+    }
+
+    private String decryptKey(String encryptedKey) throws Exception {
+        String key = Config.KEY;
+        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+        SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, "AES");
+
+        String iv = key.substring(0, 16);
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
+
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);
+        byte[] decryptedKeyBytes = cipher.doFinal(encryptedKey.getBytes(StandardCharsets.UTF_8));
+        return new String(decryptedKeyBytes, StandardCharsets.UTF_8);
+    }
+
+    private byte[] des(byte[] bytes) throws Exception {
         Cipher cipher = Cipher.getInstance("DES");
         DESKeySpec desKeySpec = new DESKeySpec(Config.KEY.getBytes(StandardCharsets.UTF_8));
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
@@ -102,20 +138,13 @@ class Decrypter {
         return cipher.doFinal(bytes);
     }
 
-    private byte[] bitConversion2(byte[] bytes) {
+    private byte[] bitConversion(byte[] bytes) {
         for (int i = 0; i < bytes.length; ++i)
             bytes[i] = (byte) (bytes[i] ^ Config.BIT_CONVERSION_KEY);
         return bytes;
     }
 
-    private void byteMap(File file, byte[][] byteMap) throws Exception {
-        byte[] bytes = Files.readAllBytes(file.toPath());
-        for (int i = 0; i < bytes.length; ++i)
-            bytes[i] = getFirstValeFromMap(bytes[i], byteMap);
-        Files.write(file.toPath(), bytes);
-    }
-
-    private byte[] byteMap2(byte[] bytes, byte[][] byteMap) {
+    private byte[] byteMap(byte[] bytes, byte[][] byteMap) {
         for (int i = 0; i < bytes.length; ++i)
             bytes[i] = getFirstValeFromMap(bytes[i], byteMap);
         return bytes;
@@ -129,11 +158,11 @@ class Decrypter {
         return 0;
     }
 
-    private byte[] base642(byte[] bytes) {
+    private byte[] base64(byte[] bytes) {
         return Base64.getDecoder().decode(bytes);
     }
 
-    private byte[] caesar642(byte[] bytes) {
+    private byte[] caesar64(byte[] bytes) {
         for (int i = 0; i < bytes.length; ++i) {
             byte b = (byte) (((bytes[i] & 0xFF) - 64));
             bytes[i] = (byte) (b % 0xFF);
@@ -141,7 +170,7 @@ class Decrypter {
         return bytes;
     }
 
-    private byte[] reverse2(byte[] bytes) {
+    private byte[] reverse(byte[] bytes) {
         byte[] reversedBytes = new byte[bytes.length];
         for (int dec = bytes.length - 1, inc = 0; dec >= 0; --dec, ++inc)
             reversedBytes[inc] = bytes[dec];

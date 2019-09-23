@@ -12,6 +12,10 @@ public class Inzcrypt {
     }
 
     public static void main(String[] args) throws Exception {
+//        long startTime = System.currentTimeMillis();
+//        System.out.println(Encrypter.generateRandomAESKey());
+//        System.out.println(System.currentTimeMillis() - startTime);
+//        System.exit(-1);
         Inzcrypt inzcrypt = new Inzcrypt();
         if (new File("1.txt").exists())
             inzcrypt.encrypt(new File("1.txt"));
