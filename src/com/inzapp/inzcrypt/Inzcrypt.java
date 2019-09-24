@@ -14,19 +14,12 @@ public class Inzcrypt {
     }
 
     public static void main(String[] args) throws Exception {
-//        long startTime = System.currentTimeMillis();
-//        String key = Config.KEY;
-//        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
-//        byte[] ivBytes = new byte[16];
-//        System.arraycopy(keyBytes, 0, ivBytes, 0, 16);
-//
-//        System.out.println(new String(keyBytes));
-//        System.out.println(new String(ivBytes));
-//        System.exit(-1);
+        long st = System.currentTimeMillis();
         Inzcrypt inzcrypt = new Inzcrypt();
         if (new File("1.txt").exists())
             inzcrypt.encrypt(new File("1.txt"));
         else inzcrypt.decrypt(new File("1.izc"));
+        System.out.println(System.currentTimeMillis() - st);
     }
 
     public void encrypt(File file) throws Exception {

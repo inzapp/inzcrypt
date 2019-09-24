@@ -72,13 +72,10 @@ class Encrypter {
         for (int i = 0; i < Config.ENCRYPT_LAYER.length; ++i) {
             switch (Config.ENCRYPT_LAYER[i]) {
                 case Config.AES_256:
-//                    bytes = aes256WithSha1(bytes);
-//                    bytes = AES256Cipher.AES_Encode(bytes);
                     bytes = aes256Test(bytes);
                     break;
 
                 case Config.DES:
-//                    bytes = des(bytes);
                     bytes = des2(bytes);
                     break;
 
@@ -103,7 +100,8 @@ class Encrypter {
                     break;
 
                 case Config.CAESAR_64:
-                    bytes = caesar64(bytes);
+//                    bytes = caesar64(bytes);
+                    bytes = caesar222(bytes);
                     break;
 
                 case Config.REVERSE:
@@ -213,15 +211,6 @@ class Encrypter {
         return cipher.doFinal(plainKeyBytes);
     }
 
-    private byte[] des(byte[] bytes) throws Exception {
-        Cipher cipher = Cipher.getInstance("DES");
-        DESKeySpec desKeySpec = new DESKeySpec(Config.KEY.getBytes(StandardCharsets.UTF_8));
-        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
-        SecretKey secretKey = secretKeyFactory.generateSecret(desKeySpec);
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-        return cipher.doFinal(bytes);
-    }
-
     private byte[] des2(byte[] bytes) throws Exception {
         String desKey = generateRandomKey();
         byte[] desKeyBytes = desKey.getBytes(StandardCharsets.UTF_8);
@@ -242,7 +231,6 @@ class Encrypter {
 
         ByteBuffer byteBuffer = ByteBuffer.allocate(Long.BYTES);
         byteBuffer.putLong(xorKey);
-
         byte[] xorKeyBytes = byteBuffer.array();
         return appendNewLineAsEncrypted(bytes, xorKeyBytes);
     }
@@ -274,9 +262,9 @@ class Encrypter {
     }
 
     private byte[] caesar222(byte[] bytes) throws Exception {
-        byte[] caesarKeyBuffer = new byte[256];
+        byte[] caesarKeyBuffer = new byte[32];
         new Random().nextBytes(caesarKeyBuffer);
-        byte caesarKey = caesarKeyBuffer[101];
+        byte caesarKey = caesarKeyBuffer[7];
         for (int i = 0; i < bytes.length; ++i) {
             byte b = (byte) (((bytes[i] & 0xFF) + caesarKey));
             bytes[i] = (byte) (b % 0xFF);

@@ -2,8 +2,6 @@ package com.inzapp.inzcrypt;
 
 class Config {
     static final String KEY = ";%cx4Z6-Fw9E*2,*96K5iu52Y;1e8j4^";
-    static final long XOR_KEY = 200823992740002938L;
-
     static final String AES_256 = "AES_256";
     static final String DES = "DES";
     static final String BASE_64 = "BASE_64";
@@ -15,7 +13,7 @@ class Config {
     static final String BYTE_MAP_3 = "BYTE_MAP_3";
 
     static final String[] ENCRYPT_LAYER = new String[]{
-            AES_256
+            CAESAR_64
     };
 
     static final byte[][] MAP_1 = new byte[][]{

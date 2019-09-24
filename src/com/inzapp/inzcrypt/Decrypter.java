@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -23,13 +22,10 @@ class Decrypter {
         for (int i = Config.ENCRYPT_LAYER.length - 1; i >= 0; --i) {
             switch (Config.ENCRYPT_LAYER[i]) {
                 case Config.AES_256:
-//                    bytes = aes256(bytes);
-//                    bytes = AES256Cipher.AES_Decode(bytes);
-                    bytes = aes256Test(bytes);
+                    bytes = aes2562(bytes);
                     break;
 
                 case Config.DES:
-//                    bytes = des(bytes);
                     bytes = des2(bytes);
                     break;
 
@@ -54,7 +50,8 @@ class Decrypter {
                     break;
 
                 case Config.CAESAR_64:
-                    bytes = caesar64(bytes);
+//                    bytes = caesar64(bytes);
+                    bytes = caesar222(bytes);
                     break;
 
                 case Config.REVERSE:
@@ -66,12 +63,13 @@ class Decrypter {
             }
         }
         String originalName = getOriginalNameFromFileAndReplaceThemEmpty(bytes);
-        bytes = new String(bytes, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
+        bytes = removeLastLine(bytes);
+//        bytes = new String(bytes, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
         Files.write(file.toPath(), bytes);
         renameToOriginalName(file, originalName);
     }
 
-    private byte[] aes256(byte[] bytes) throws Exception {
+    private byte[] aes256WithSha1(byte[] bytes) throws Exception {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
 
@@ -92,7 +90,7 @@ class Decrypter {
         return cipher.doFinal(encryptedTextBytes);
     }
 
-    private byte[] aes256Test(byte[] bytes) throws Exception {
+    private byte[] aes2562(byte[] bytes) throws Exception {
         byte[] aesKeyBytes = decryptKeyFromLastLine(bytes);
         bytes = removeLastLine(bytes);
 
@@ -147,10 +145,8 @@ class Decrypter {
     }
 
     private byte[] des2(byte[] bytes) throws Exception {
-        System.out.println("before: \n" + new String(bytes, StandardCharsets.UTF_8));
         byte[] desKeyBytes = decryptKeyFromLastLine(bytes);
         bytes = removeLastLine(bytes);
-        System.out.print("after: \n" + new String(bytes, StandardCharsets.UTF_8));
 
         Cipher cipher = Cipher.getInstance("DES");
         DESKeySpec desKeySpec = new DESKeySpec(desKeyBytes);
@@ -200,6 +196,16 @@ class Decrypter {
         return bytes;
     }
 
+    private byte[] caesar222(byte[] bytes) throws Exception {
+        byte[] caesarKeyBuffer = decryptKeyFromLastLine(bytes);
+        byte caesarKey = caesarKeyBuffer[7];
+        for (int i = 0; i < bytes.length; ++i) {
+            byte b = (byte) (((bytes[i] & 0xFF) - caesarKey));
+            bytes[i] = (byte) (b % 0xFF);
+        }
+        return bytes;
+    }
+
     private byte[] reverse(byte[] bytes) {
         byte[] reversedBytes = new byte[bytes.length];
         for (int dec = bytes.length - 1, inc = 0; dec >= 0; --dec, ++inc)
@@ -208,17 +214,17 @@ class Decrypter {
     }
 
     private String getOriginalNameFromFileAndReplaceThemEmpty(byte[] bytes) {
-        List<Byte> reversedFileNameBytes = new ArrayList<>();
+        List<Byte> reversedFileNameByteList = new ArrayList<>();
         for (int i = bytes.length - 1; i >= 0; --i) {
             if (bytes[i] == '\n')
                 break;
-            reversedFileNameBytes.add(bytes[i]);
+            reversedFileNameByteList.add(bytes[i]);
             bytes[i] = ' '; // change bytes references value
         }
-        byte[] fileNameBytes = new byte[reversedFileNameBytes.size()];
-        for (int dec = reversedFileNameBytes.size() - 1, inc = 0; dec >= 0; --dec, ++inc)
-            fileNameBytes[inc] = reversedFileNameBytes.get(dec);
-        return new String(fileNameBytes, StandardCharsets.UTF_8);
+        byte[] reversedFileNameBytes = new byte[reversedFileNameByteList.size()];
+        for (int dec = reversedFileNameByteList.size() - 1, inc = 0; dec >= 0; --dec, ++inc)
+            reversedFileNameBytes[inc] = reversedFileNameByteList.get(dec);
+        return new String(reversedFileNameBytes, StandardCharsets.UTF_8);
     }
 
     private void renameToOriginalName(File file, String originalFileName) throws IOException {
