@@ -78,11 +78,11 @@ class Encrypter {
                     break;
 
                 case Config.DES:
-                    bytes = des(bytes);
+//                    bytes = des(bytes);
+                    bytes = des2(bytes);
                     break;
 
                 case Config.XOR:
-//                    bytes = xor(bytes);
                     bytes = xor2(bytes);
                     break;
 
@@ -232,12 +232,6 @@ class Encrypter {
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         bytes = cipher.doFinal(bytes);
         return appendNewLineAsEncrypted(bytes, desKeyBytes);
-    }
-
-    private byte[] xor(byte[] bytes) {
-        for (int i = 0; i < bytes.length; ++i)
-            bytes[i] = (byte) (bytes[i] ^ Config.XOR_KEY);
-        return bytes;
     }
 
     private byte[] xor2(byte[] bytes) throws Exception {

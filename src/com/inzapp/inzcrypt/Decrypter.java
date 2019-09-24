@@ -29,11 +29,11 @@ class Decrypter {
                     break;
 
                 case Config.DES:
-                    bytes = des(bytes);
+//                    bytes = des(bytes);
+                    bytes = des2(bytes);
                     break;
 
                 case Config.XOR:
-//                    bytes = xor(bytes);
                     bytes = xor2(bytes);
                     break;
 
@@ -194,10 +194,16 @@ class Decrypter {
         return cipher.doFinal(bytes);
     }
 
-    private byte[] xor(byte[] bytes) {
-        for (int i = 0; i < bytes.length; ++i)
-            bytes[i] = (byte) (bytes[i] ^ Config.XOR_KEY);
-        return bytes;
+    private byte[] des2(byte[] bytes) throws Exception {
+        byte[] desKeyBytes = decryptKeyFromLastLine(bytes);
+        bytes = removeLastLine(bytes);
+
+        Cipher cipher = Cipher.getInstance("DES");
+        DESKeySpec desKeySpec = new DESKeySpec(desKeyBytes);
+        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
+        SecretKey secretKey =  secretKeyFactory.generateSecret(desKeySpec);
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+        return cipher.doFinal(bytes);
     }
 
     private byte[] xor2(byte[] bytes) throws Exception {
