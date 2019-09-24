@@ -24,7 +24,8 @@ class Decrypter {
             switch (Config.ENCRYPT_LAYER[i]) {
                 case Config.AES_256:
 //                    bytes = aes256(bytes);
-                    bytes = aes256Test(bytes);
+                     bytes = AES256Cipher.AES_Decode(bytes);
+//                    bytes = aes256Test(bytes);
                     break;
 
                 case Config.DES:
@@ -71,7 +72,8 @@ class Decrypter {
 
     private byte[] aes256(byte[] bytes) throws Exception {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        ByteBuffer byteBuffer = ByteBuffer.wrap(Base64.getDecoder().decode(bytes));
+//        ByteBuffer byteBuffer = ByteBuffer.wrap(Base64.getDecoder().decode(bytes));
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
 
         byte[] saltBytes = new byte[20];
         byteBuffer.get(saltBytes, 0, saltBytes.length);
@@ -124,7 +126,17 @@ class Decrypter {
     }
 
     private byte[] removeLastLine(byte[] bytes) {
-        return new String(bytes, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
+        int endIdx = 0;
+        for (int i = bytes.length - 1; i >= 0; --i) {
+            if(bytes[i] == '\n') {
+                endIdx = i;
+                break;
+            }
+        }
+        byte[] newBytes = new byte[endIdx + 1];
+        System.arraycopy(bytes, 0, newBytes, 0, endIdx + 1);
+        return newBytes;
+//        return new String(bytes, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
     }
 
     private String decryptKey(String encryptedKey) throws Exception {

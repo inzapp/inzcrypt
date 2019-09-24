@@ -9,6 +9,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.AlgorithmParameters;
@@ -18,6 +19,48 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Random;
+
+
+class AES256Cipher {
+    private static volatile AES256Cipher INSTANCE;
+    final static String secretKey = "Q!d$2018072316543418070119376805"; //32bit
+    //    static String IV = "L$b@180701193768"; //16bit
+    static String IV = "Q!d$201807231654";
+
+    public static AES256Cipher getInstance() {
+        if (INSTANCE == null) {
+            synchronized (AES256Cipher.class) {
+                if (INSTANCE == null)
+                    INSTANCE = new AES256Cipher();
+            }
+        }
+        return INSTANCE;
+    }
+
+    private AES256Cipher() {
+        IV = secretKey.substring(0, 16);
+    }
+
+    // Encryption
+    public static byte[] AES_Encode(byte[] bytes) throws Exception {
+//        byte[] keyData = secretKey.getBytes();
+        byte[] keyData = Config.KEY.getBytes(StandardCharsets.UTF_8);
+        SecretKey secureKey = new SecretKeySpec(keyData, "AES");
+        Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        c.init(Cipher.ENCRYPT_MODE, secureKey, new IvParameterSpec(IV.getBytes()));
+        return c.doFinal(bytes);
+    }
+
+    // Decryption
+    public static byte[] AES_Decode(byte[] bytes) throws Exception {
+//        byte[] keyData = secretKey.getBytes();
+        byte[] keyData = Config.KEY.getBytes(StandardCharsets.UTF_8);
+        SecretKey secureKey = new SecretKeySpec(keyData, "AES");
+        Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        c.init(Cipher.DECRYPT_MODE, secureKey, new IvParameterSpec(IV.getBytes(StandardCharsets.UTF_8)));
+        return c.doFinal(bytes);
+    }
+}
 
 class Encrypter {
     void encrypt(File file) throws Exception {
@@ -31,7 +74,8 @@ class Encrypter {
             switch (Config.ENCRYPT_LAYER[i]) {
                 case Config.AES_256:
 //                    bytes = aes256(bytes);
-                    bytes = aes256Test(bytes);
+                    bytes = AES256Cipher.AES_Encode(bytes);
+//                    bytes = aes256Test(bytes);
                     break;
 
                 case Config.DES:
@@ -106,7 +150,8 @@ class Encrypter {
         System.arraycopy(saltBytes, 0, buffer, 0, saltBytes.length);
         System.arraycopy(ivBytes, 0, buffer, saltBytes.length, ivBytes.length);
         System.arraycopy(encryptedTextBytes, 0, buffer, saltBytes.length + ivBytes.length, encryptedTextBytes.length);
-        return Base64.getEncoder().encode(buffer);
+        return buffer;
+//        return Base64.getEncoder().encode(buffer);
     }
 
     private byte[] aes256Test(byte[] bytes) throws Exception {
@@ -180,7 +225,6 @@ class Encrypter {
         return cipher.doFinal(keyBytes);
     }
 
-
     private byte[] des(byte[] bytes) throws Exception {
         Cipher cipher = Cipher.getInstance("DES");
         DESKeySpec desKeySpec = new DESKeySpec(Config.KEY.getBytes(StandardCharsets.UTF_8));
@@ -194,6 +238,25 @@ class Encrypter {
         for (int i = 0; i < bytes.length; ++i)
             bytes[i] = (byte) (bytes[i] ^ Config.XOR_KEY);
         return bytes;
+    }
+
+    private byte[] xor2(byte[] bytes) throws Exception {
+        long xorKey = new Random().nextLong();
+        for (int i = 0; i < bytes.length; ++i)
+            bytes[i] = (byte) (bytes[i] ^ xorKey);
+
+        ByteBuffer byteBuffer = ByteBuffer.allocate(Long.BYTES);
+        byteBuffer.putLong(xorKey);
+
+        byte[] xorKeyBytes = byteBuffer.array();
+        byte[] encryptedXorKeyBytes = aes256(xorKeyBytes);
+        byte[] newLine = new byte[]{'\n'};
+        byte[] buffer = new byte[bytes.length + newLine.length + encryptedXorKeyBytes.length];
+
+        System.arraycopy(bytes, 0, buffer, 0, bytes.length);
+        System.arraycopy(newLine, 0, buffer, bytes.length, newLine.length);
+        System.arraycopy(encryptedXorKeyBytes, 0, buffer, bytes.length + newLine.length, encryptedXorKeyBytes.length);
+        return buffer;
     }
 
     private byte[] byteMap(byte[] bytes, byte[][] byteMap) {
@@ -220,6 +283,27 @@ class Encrypter {
             bytes[i] = (byte) (b % 0xFF);
         }
         return bytes;
+    }
+
+    private byte[] caesar642(byte[] bytes) throws Exception {
+        byte[] caesarKeyBuffer = new byte[256];
+        new Random().nextBytes(caesarKeyBuffer);
+        byte caesarKey = caesarKeyBuffer[101];
+        for (int i = 0; i < bytes.length; ++i) {
+            byte b = (byte) (((bytes[i] & 0xFF) + caesarKey));
+            bytes[i] = (byte) (b % 0xFF);
+        }
+        caesarKeyBuffer = aes256(caesarKeyBuffer);
+        return bytes;
+    }
+
+    private byte[] appendAsNewLine(byte[] bytes, byte[] appendBytes) {
+        byte[] newLine = new byte[]{'\n'};
+        byte[] buffer = new byte[bytes.length + newLine.length + appendBytes.length];
+        System.arraycopy(bytes, 0, buffer, 0, bytes.length);
+        System.arraycopy(newLine, 0, buffer, bytes.length, newLine.length);
+        System.arraycopy(appendBytes, 0, buffer, bytes.length + newLine.length, appendBytes.length);
+        return buffer;
     }
 
     private byte[] reverse(byte[] bytes) {
