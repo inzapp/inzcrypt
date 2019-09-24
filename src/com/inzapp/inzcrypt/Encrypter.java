@@ -39,7 +39,7 @@ class Encrypter {
                     break;
 
                 case Config.XOR:
-                    bytes = bitConversion(bytes);
+                    bytes = xor(bytes);
                     break;
 
                 case Config.BYTE_MAP_1:
@@ -190,7 +190,7 @@ class Encrypter {
         return cipher.doFinal(bytes);
     }
 
-    private byte[] bitConversion(byte[] bytes) {
+    private byte[] xor(byte[] bytes) {
         for (int i = 0; i < bytes.length; ++i)
             bytes[i] = (byte) (bytes[i] ^ Config.XOR_KEY);
         return bytes;
