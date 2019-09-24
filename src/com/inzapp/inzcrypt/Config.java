@@ -2,16 +2,16 @@ package com.inzapp.inzcrypt;
 
 class Config {
     static final String KEY = ";%cx4Z6-Fw9E*2,*96K5iu52Y;1e8j4^";
-    static final long BIT_CONVERSION_KEY = 200823992740002938L;
+    static final long XOR_KEY = 200823992740002938L;
     static final String AES_256 = "AES_256";
+    static final String DES = "DES";
     static final String BASE_64 = "BASE_64";
     static final String CAESAR_64 = "CAESAR_64";
-    static final String BIT_CONVERSION = "BIT_CONVERSION";
+    static final String XOR = "XOR";
+    static final String REVERSE = "REVERSE";
     static final String BYTE_MAP_1 = "BYTE_MAP_1";
     static final String BYTE_MAP_2 = "BYTE_MAP_2";
     static final String BYTE_MAP_3 = "BYTE_MAP_3";
-    static final String REVERSE = "REVERSE";
-    static final String DES = "DES";
 
     static final String[] ENCRYPT_LAYER = new String[]{
             AES_256

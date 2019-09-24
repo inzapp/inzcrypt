@@ -38,7 +38,7 @@ class Encrypter {
                     bytes = des(bytes);
                     break;
 
-                case Config.BIT_CONVERSION:
+                case Config.XOR:
                     bytes = bitConversion(bytes);
                     break;
 
@@ -192,7 +192,7 @@ class Encrypter {
 
     private byte[] bitConversion(byte[] bytes) {
         for (int i = 0; i < bytes.length; ++i)
-            bytes[i] = (byte) (bytes[i] ^ Config.BIT_CONVERSION_KEY);
+            bytes[i] = (byte) (bytes[i] ^ Config.XOR_KEY);
         return bytes;
     }
 
