@@ -155,20 +155,20 @@ class Encrypter {
     }
 
     private byte[] aes256Test(byte[] bytes) throws Exception {
-        String randomAESKey = generateRandomAESKey();
-        byte[] randomAESKeyBytes = randomAESKey.getBytes(StandardCharsets.UTF_8);
+        String aesKey = generateRandomKey();
+        byte[] randomAESKeyBytes = aesKey.getBytes(StandardCharsets.UTF_8);
         SecretKeySpec secretKeySpec = new SecretKeySpec(randomAESKeyBytes, "AES");
 
-        String iv = randomAESKey.substring(0, 16);
+        String iv = aesKey.substring(0, 16);
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
 
         bytes = cipher.doFinal(bytes);
-        return appendAESKeyToLastLine(bytes, randomAESKeyBytes);
+        return appendNewLineAsEncrypted(bytes, randomAESKeyBytes);
     }
 
-    private String generateRandomAESKey() {
+    private String generateRandomKey() {
         StringBuilder sb = new StringBuilder();
         Random random = new Random(System.currentTimeMillis());
         char[] specials = new char[]{
@@ -201,17 +201,6 @@ class Encrypter {
         return sb.toString();
     }
 
-    private byte[] appendAESKeyToLastLine(byte[] bytes, byte[] keyBytes) throws Exception {
-        keyBytes = encryptKey(keyBytes);
-        keyBytes = base64(keyBytes);
-        byte[] newBytes = new byte[bytes.length + 1 + keyBytes.length];
-        byte[] newLine = new byte[]{'\n'};
-        System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
-        System.arraycopy(newLine, 0, newBytes, bytes.length, newLine.length);
-        System.arraycopy(keyBytes, 0, newBytes, bytes.length + newLine.length, keyBytes.length);
-        return newBytes;
-    }
-
     private byte[] encryptKey(byte[] keyBytes) throws Exception {
         String key = Config.KEY;
         byte[] randomAESKeyBytes = key.getBytes(StandardCharsets.UTF_8);
@@ -229,9 +218,21 @@ class Encrypter {
         Cipher cipher = Cipher.getInstance("DES");
         DESKeySpec desKeySpec = new DESKeySpec(Config.KEY.getBytes(StandardCharsets.UTF_8));
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
-        Key key = secretKeyFactory.generateSecret(desKeySpec);
-        cipher.init(Cipher.ENCRYPT_MODE, key);
+        SecretKey secretKey = secretKeyFactory.generateSecret(desKeySpec);
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         return cipher.doFinal(bytes);
+    }
+
+    private byte[] des2(byte[] bytes) throws Exception {
+        String desKey = generateRandomKey();
+        byte[] desKeyBytes = desKey.getBytes(StandardCharsets.UTF_8);
+        Cipher cipher = Cipher.getInstance("DES");
+        DESKeySpec desKeySpec = new DESKeySpec(desKeyBytes);
+        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
+        SecretKey secretKey = secretKeyFactory.generateSecret(desKeySpec);
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        bytes = cipher.doFinal(bytes);
+        return appendNewLineAsEncrypted(bytes, desKeyBytes);
     }
 
     private byte[] xor(byte[] bytes) {
@@ -249,8 +250,7 @@ class Encrypter {
         byteBuffer.putLong(xorKey);
 
         byte[] xorKeyBytes = byteBuffer.array();
-        byte[] encryptedXorKeyBytes = encryptKey(xorKeyBytes);
-        return appendNewLineAsEncrypted(bytes, encryptedXorKeyBytes);
+        return appendNewLineAsEncrypted(bytes, xorKeyBytes);
     }
 
     private byte[] byteMap(byte[] bytes, byte[][] byteMap) {
@@ -279,7 +279,7 @@ class Encrypter {
         return bytes;
     }
 
-    private byte[] caesar642(byte[] bytes) throws Exception {
+    private byte[] caesar(byte[] bytes) throws Exception {
         byte[] caesarKeyBuffer = new byte[256];
         new Random().nextBytes(caesarKeyBuffer);
         byte caesarKey = caesarKeyBuffer[101];
@@ -287,7 +287,6 @@ class Encrypter {
             byte b = (byte) (((bytes[i] & 0xFF) + caesarKey));
             bytes[i] = (byte) (b % 0xFF);
         }
-        caesarKeyBuffer = encryptKey(caesarKeyBuffer);
         return appendNewLineAsEncrypted(bytes, caesarKeyBuffer);
     }
 

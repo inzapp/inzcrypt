@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ec78b75f-84e9-4034-b53b-d2c63d96564a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Decrypter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Decrypter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Encrypter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Encrypter.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />

@@ -133,9 +133,9 @@ class Decrypter {
                 break;
             }
         }
-        byte[] newBytes = new byte[endIdx + 1];
-        System.arraycopy(bytes, 0, newBytes, 0, endIdx + 1);
-        return newBytes;
+        byte[] buffer = new byte[endIdx + 1];
+        System.arraycopy(bytes, 0, buffer, 0, endIdx + 1);
+        return buffer;
 //        return new String(bytes, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
     }
 
