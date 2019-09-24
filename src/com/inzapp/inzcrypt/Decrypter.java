@@ -33,7 +33,8 @@ class Decrypter {
                     break;
 
                 case Config.XOR:
-                    bytes = xor(bytes);
+//                    bytes = xor(bytes);
+                    bytes = xor2(bytes);
                     break;
 
                 case Config.BYTE_MAP_1:
@@ -124,7 +125,7 @@ class Decrypter {
         return new String(encryptedKeyBytes, StandardCharsets.UTF_8);
     }
 
-    private byte[] decryptKeyFromLastLine(byte[] bytes) {
+    private byte[] decryptKeyFromLastLine(byte[] bytes) throws Exception {
         List<Byte> reversedKeyByteList = new ArrayList<>();
         for (int i = bytes.length - 1; i >= 0; --i) {
             if (bytes[i] == '\n')
@@ -135,9 +136,8 @@ class Decrypter {
         byte[] reversedKeyBytes = new byte[reversedKeyByteList.size()];
         for (int i = 0; i < reversedKeyBytes.length; ++i)
             reversedKeyBytes[i] = reversedKeyByteList.get(i);
-        byte[] keyBytes = reverse(reversedKeyBytes);
-//        keyBytes = decryptKey(keyBytes);
-        return null;
+        byte[] encryptedKeyBytes = reverse(reversedKeyBytes);
+        return decryptKey2(encryptedKeyBytes);
     }
 
     private byte[] removeLastLine(byte[] bytes) {
@@ -173,7 +173,7 @@ class Decrypter {
         return new String(decryptedKeyBytes, StandardCharsets.UTF_8);
     }
 
-    private byte[] decryptKey2(byte[] keyBytes) throws Exception {
+    private byte[] decryptKey2(byte[] encryptedKeyBytes) throws Exception {
         String keyForKey = Config.KEY;
         byte[] keyForKeyBytes = keyForKey.getBytes(StandardCharsets.UTF_8);
         byte[] ivBytes = new byte[16];
@@ -182,7 +182,7 @@ class Decrypter {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         SecretKeySpec secretKeySpec = new SecretKeySpec(keyForKeyBytes, "AES");
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(ivBytes));
-        return cipher.doFinal(keyBytes);
+        return cipher.doFinal(encryptedKeyBytes);
     }
 
     private byte[] des(byte[] bytes) throws Exception {
@@ -200,10 +200,18 @@ class Decrypter {
         return bytes;
     }
 
-//    private byte[] xor2(byte[] bytes) {
-//        byte[] keyBytes = getEncryptedKeyFromLastLine(bytes);
-//        bytes = removeLastLine(bytes)
-//    }
+    private byte[] xor2(byte[] bytes) throws Exception {
+        byte[] xorKeyBytes = decryptKeyFromLastLine(bytes);
+        bytes = removeLastLine(bytes);
+
+        ByteBuffer byteBuffer = ByteBuffer.allocate(Long.BYTES);
+        byteBuffer.put(xorKeyBytes);
+        long xorKey = byteBuffer.getLong();
+
+        for (int i = 0; i < bytes.length; ++i)
+            bytes[i] = (byte) (bytes[i] ^ xorKey);
+        return bytes;
+    }
 
     private byte[] byteMap(byte[] bytes, byte[][] byteMap) {
         for (int i = 0; i < bytes.length; ++i)

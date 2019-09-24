@@ -13,7 +13,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.AlgorithmParameters;
-import java.security.Key;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -73,7 +72,7 @@ class Encrypter {
         for (int i = 0; i < Config.ENCRYPT_LAYER.length; ++i) {
             switch (Config.ENCRYPT_LAYER[i]) {
                 case Config.AES_256:
-//                    bytes = aes256(bytes);
+//                    bytes = aes256WithSha1(bytes);
                     bytes = AES256Cipher.AES_Encode(bytes);
 //                    bytes = aes256Test(bytes);
                     break;
@@ -83,7 +82,8 @@ class Encrypter {
                     break;
 
                 case Config.XOR:
-                    bytes = xor(bytes);
+//                    bytes = xor(bytes);
+                    bytes = xor2(bytes);
                     break;
 
                 case Config.BYTE_MAP_1:
@@ -131,7 +131,7 @@ class Encrypter {
         return bytes;
     }
 
-    private byte[] aes256(byte[] bytes) throws Exception {
+    private byte[] aes256WithSha1(byte[] bytes) throws Exception {
         SecureRandom secureRandom = new SecureRandom();
         byte[] saltBytes = new byte[20];
         secureRandom.nextBytes(saltBytes);
@@ -155,8 +155,8 @@ class Encrypter {
 
     private byte[] aes256Test(byte[] bytes) throws Exception {
         String aesKey = generateRandomKey();
-        byte[] randomAESKeyBytes = aesKey.getBytes(StandardCharsets.UTF_8);
-        SecretKeySpec secretKeySpec = new SecretKeySpec(randomAESKeyBytes, "AES");
+        byte[] aesKeyBytes = aesKey.getBytes(StandardCharsets.UTF_8);
+        SecretKeySpec secretKeySpec = new SecretKeySpec(aesKeyBytes, "AES");
 
         String iv = aesKey.substring(0, 16);
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
@@ -164,7 +164,7 @@ class Encrypter {
         cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
 
         bytes = cipher.doFinal(bytes);
-        return appendNewLineAsEncrypted(bytes, randomAESKeyBytes);
+        return appendNewLineAsEncrypted(bytes, aesKeyBytes);
     }
 
     private String generateRandomKey() {
@@ -200,7 +200,7 @@ class Encrypter {
         return sb.toString();
     }
 
-    private byte[] encryptKey(byte[] keyBytes) throws Exception {
+    private byte[] encryptKey(byte[] plainKeyBytes) throws Exception {
         String keyForKey = Config.KEY;
         byte[] keyForKeyBytes = keyForKey.getBytes(StandardCharsets.UTF_8);
         byte[] ivBytes = new byte[16];
@@ -209,7 +209,7 @@ class Encrypter {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         SecretKeySpec secretKeySpec = new SecretKeySpec(keyForKeyBytes, "AES");
         cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, new IvParameterSpec(ivBytes));
-        return cipher.doFinal(keyBytes);
+        return cipher.doFinal(plainKeyBytes);
     }
 
     private byte[] des(byte[] bytes) throws Exception {
@@ -224,6 +224,7 @@ class Encrypter {
     private byte[] des2(byte[] bytes) throws Exception {
         String desKey = generateRandomKey();
         byte[] desKeyBytes = desKey.getBytes(StandardCharsets.UTF_8);
+
         Cipher cipher = Cipher.getInstance("DES");
         DESKeySpec desKeySpec = new DESKeySpec(desKeyBytes);
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
@@ -277,7 +278,7 @@ class Encrypter {
         return bytes;
     }
 
-    private byte[] caesar(byte[] bytes) throws Exception {
+    private byte[] caesar222(byte[] bytes) throws Exception {
         byte[] caesarKeyBuffer = new byte[256];
         new Random().nextBytes(caesarKeyBuffer);
         byte caesarKey = caesarKeyBuffer[101];
