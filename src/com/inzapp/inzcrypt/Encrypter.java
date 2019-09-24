@@ -249,14 +249,8 @@ class Encrypter {
         byteBuffer.putLong(xorKey);
 
         byte[] xorKeyBytes = byteBuffer.array();
-        byte[] encryptedXorKeyBytes = aes256(xorKeyBytes);
-        byte[] newLine = new byte[]{'\n'};
-        byte[] buffer = new byte[bytes.length + newLine.length + encryptedXorKeyBytes.length];
-
-        System.arraycopy(bytes, 0, buffer, 0, bytes.length);
-        System.arraycopy(newLine, 0, buffer, bytes.length, newLine.length);
-        System.arraycopy(encryptedXorKeyBytes, 0, buffer, bytes.length + newLine.length, encryptedXorKeyBytes.length);
-        return buffer;
+        byte[] encryptedXorKeyBytes = encryptKey(xorKeyBytes);
+        return appendNewLineAsEncrypted(bytes, encryptedXorKeyBytes);
     }
 
     private byte[] byteMap(byte[] bytes, byte[][] byteMap) {
@@ -293,11 +287,12 @@ class Encrypter {
             byte b = (byte) (((bytes[i] & 0xFF) + caesarKey));
             bytes[i] = (byte) (b % 0xFF);
         }
-        caesarKeyBuffer = aes256(caesarKeyBuffer);
-        return bytes;
+        caesarKeyBuffer = encryptKey(caesarKeyBuffer);
+        return appendNewLineAsEncrypted(bytes, caesarKeyBuffer);
     }
 
-    private byte[] appendAsNewLine(byte[] bytes, byte[] appendBytes) {
+    private byte[] appendNewLineAsEncrypted(byte[] bytes, byte[] appendBytes) throws Exception {
+        appendBytes = encryptKey(appendBytes);
         byte[] newLine = new byte[]{'\n'};
         byte[] buffer = new byte[bytes.length + newLine.length + appendBytes.length];
         System.arraycopy(bytes, 0, buffer, 0, bytes.length);
