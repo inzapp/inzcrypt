@@ -23,7 +23,7 @@ import java.util.Random;
 
 class AES256Cipher {
     private static volatile AES256Cipher INSTANCE;
-    final static String secretKey = "Q!d$2018072316543418070119376805"; //32bit
+    private static final String secretKey = "Q!d$2018072316543418070119376805"; //32bit
     //    static String IV = "L$b@180701193768"; //16bit
     static String IV = "Q!d$201807231654";
 
@@ -44,20 +44,20 @@ class AES256Cipher {
     // Encryption
     public static byte[] AES_Encode(byte[] bytes) throws Exception {
 //        byte[] keyData = secretKey.getBytes();
-        byte[] keyData = Config.KEY.getBytes(StandardCharsets.UTF_8);
-        SecretKey secureKey = new SecretKeySpec(keyData, "AES");
+        byte[] keyBytes = Config.KEY.getBytes(StandardCharsets.UTF_8);
+        SecretKey secretKey = new SecretKeySpec(keyBytes, "AES");
         Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        c.init(Cipher.ENCRYPT_MODE, secureKey, new IvParameterSpec(IV.getBytes()));
+        c.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV.getBytes()));
         return c.doFinal(bytes);
     }
 
     // Decryption
     public static byte[] AES_Decode(byte[] bytes) throws Exception {
 //        byte[] keyData = secretKey.getBytes();
-        byte[] keyData = Config.KEY.getBytes(StandardCharsets.UTF_8);
-        SecretKey secureKey = new SecretKeySpec(keyData, "AES");
+        byte[] keyBytes = Config.KEY.getBytes(StandardCharsets.UTF_8);
+        SecretKey secretKey = new SecretKeySpec(keyBytes, "AES");
         Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        c.init(Cipher.DECRYPT_MODE, secureKey, new IvParameterSpec(IV.getBytes(StandardCharsets.UTF_8)));
+        c.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV.getBytes(StandardCharsets.UTF_8)));
         return c.doFinal(bytes);
     }
 }
@@ -151,7 +151,6 @@ class Encrypter {
         System.arraycopy(ivBytes, 0, buffer, saltBytes.length, ivBytes.length);
         System.arraycopy(encryptedTextBytes, 0, buffer, saltBytes.length + ivBytes.length, encryptedTextBytes.length);
         return buffer;
-//        return Base64.getEncoder().encode(buffer);
     }
 
     private byte[] aes256Test(byte[] bytes) throws Exception {

@@ -24,7 +24,7 @@ class Decrypter {
             switch (Config.ENCRYPT_LAYER[i]) {
                 case Config.AES_256:
 //                    bytes = aes256(bytes);
-                     bytes = AES256Cipher.AES_Decode(bytes);
+                    bytes = AES256Cipher.AES_Decode(bytes);
 //                    bytes = aes256Test(bytes);
                     break;
 
@@ -64,7 +64,7 @@ class Decrypter {
                     break;
             }
         }
-        String originalName = getOriginalNameFromFileAndReplaceThemToZero(bytes);
+        String originalName = getOriginalNameFromFileAndReplaceThemEmpty(bytes);
         bytes = new String(bytes, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
         Files.write(file.toPath(), bytes);
         renameToOriginalName(file, originalName);
@@ -72,7 +72,6 @@ class Decrypter {
 
     private byte[] aes256(byte[] bytes) throws Exception {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-//        ByteBuffer byteBuffer = ByteBuffer.wrap(Base64.getDecoder().decode(bytes));
         ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
 
         byte[] saltBytes = new byte[20];
@@ -125,10 +124,26 @@ class Decrypter {
         return new String(encryptedKeyBytes, StandardCharsets.UTF_8);
     }
 
+    private byte[] decryptKeyFromLastLine(byte[] bytes) {
+        List<Byte> reversedKeyByteList = new ArrayList<>();
+        for (int i = bytes.length - 1; i >= 0; --i) {
+            if (bytes[i] == '\n') {
+                bytes[i] = ' ';
+                break;
+            }
+            reversedKeyByteList.add(bytes[i]);
+            bytes[i] = ' ';
+        }
+        byte[] reversedKeyBytes = new byte[reversedKeyByteList.size()];
+        for (int i = 0; i < reversedKeyBytes.length; ++i)
+            reversedKeyBytes[i] = reversedKeyByteList.get(i);
+        return reverse(reversedKeyBytes);
+    }
+
     private byte[] removeLastLine(byte[] bytes) {
         int endIdx = 0;
         for (int i = bytes.length - 1; i >= 0; --i) {
-            if(bytes[i] == '\n') {
+            if (bytes[i] == '\n') {
                 endIdx = i;
                 break;
             }
@@ -173,6 +188,11 @@ class Decrypter {
         return bytes;
     }
 
+//    private byte[] xor2(byte[] bytes) {
+//        byte[] keyBytes = getEncryptedKeyFromLastLine(bytes);
+//        bytes = removeLastLine(bytes)
+//    }
+
     private byte[] byteMap(byte[] bytes, byte[][] byteMap) {
         for (int i = 0; i < bytes.length; ++i)
             bytes[i] = getFirstValeFromMap(bytes[i], byteMap);
@@ -206,13 +226,13 @@ class Decrypter {
         return reversedBytes;
     }
 
-    private String getOriginalNameFromFileAndReplaceThemToZero(byte[] bytes) {
+    private String getOriginalNameFromFileAndReplaceThemEmpty(byte[] bytes) {
         List<Byte> reversedFileNameBytes = new ArrayList<>();
         for (int i = bytes.length - 1; i >= 0; --i) {
             if (bytes[i] == '\n')
                 break;
             reversedFileNameBytes.add(bytes[i]);
-            bytes[i] = 0; // change bytes references value
+            bytes[i] = ' '; // change bytes references value
         }
         byte[] fileNameBytes = new byte[reversedFileNameBytes.size()];
         for (int dec = reversedFileNameBytes.size() - 1, inc = 0; dec >= 0; --dec, ++inc)
