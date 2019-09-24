@@ -45,9 +45,9 @@ class AES256Cipher {
     public static byte[] AES_Encode(byte[] bytes) throws Exception {
 //        byte[] keyData = secretKey.getBytes();
         byte[] keyBytes = Config.KEY.getBytes(StandardCharsets.UTF_8);
-        SecretKey secretKey = new SecretKeySpec(keyBytes, "AES");
+        SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, "AES");
         Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        c.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(IV.getBytes()));
+        c.init(Cipher.ENCRYPT_MODE, secretKeySpec, new IvParameterSpec(IV.getBytes()));
         return c.doFinal(bytes);
     }
 
@@ -55,9 +55,9 @@ class AES256Cipher {
     public static byte[] AES_Decode(byte[] bytes) throws Exception {
 //        byte[] keyData = secretKey.getBytes();
         byte[] keyBytes = Config.KEY.getBytes(StandardCharsets.UTF_8);
-        SecretKey secretKey = new SecretKeySpec(keyBytes, "AES");
+        SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, "AES");
         Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        c.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV.getBytes(StandardCharsets.UTF_8)));
+        c.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(IV.getBytes(StandardCharsets.UTF_8)));
         return c.doFinal(bytes);
     }
 }
@@ -201,15 +201,14 @@ class Encrypter {
     }
 
     private byte[] encryptKey(byte[] keyBytes) throws Exception {
-        String key = Config.KEY;
-        byte[] randomAESKeyBytes = key.getBytes(StandardCharsets.UTF_8);
-        SecretKeySpec secretKeySpec = new SecretKeySpec(randomAESKeyBytes, "AES");
+        String keyForKey = Config.KEY;
+        byte[] keyForKeyBytes = keyForKey.getBytes(StandardCharsets.UTF_8);
+        byte[] ivBytes = new byte[16];
+        System.arraycopy(keyForKeyBytes, 0, ivBytes, 0, 16);
 
-        String iv = key.substring(0, 16);
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
         Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec/*, ivParameterSpec*/);
-
+        SecretKeySpec secretKeySpec = new SecretKeySpec(keyForKeyBytes, "AES");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, new IvParameterSpec(ivBytes));
         return cipher.doFinal(keyBytes);
     }
 

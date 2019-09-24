@@ -1,6 +1,7 @@
 package com.inzapp.inzcrypt;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 public class Inzcrypt {
@@ -13,10 +14,15 @@ public class Inzcrypt {
     }
 
     public static void main(String[] args) throws Exception {
-        long startTime = System.currentTimeMillis();
-        System.out.println(new Random().nextLong());
-        System.out.println(System.currentTimeMillis() - startTime);
-        System.exit(-1);
+//        long startTime = System.currentTimeMillis();
+//        String key = Config.KEY;
+//        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+//        byte[] ivBytes = new byte[16];
+//        System.arraycopy(keyBytes, 0, ivBytes, 0, 16);
+//
+//        System.out.println(new String(keyBytes));
+//        System.out.println(new String(ivBytes));
+//        System.exit(-1);
         Inzcrypt inzcrypt = new Inzcrypt();
         if (new File("1.txt").exists())
             inzcrypt.encrypt(new File("1.txt"));
