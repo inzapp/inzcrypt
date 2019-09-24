@@ -15,7 +15,7 @@ class Config {
     static final String BYTE_MAP_3 = "BYTE_MAP_3";
 
     static final String[] ENCRYPT_LAYER = new String[]{
-            XOR
+            AES_256
     };
 
     static final byte[][] MAP_1 = new byte[][]{
