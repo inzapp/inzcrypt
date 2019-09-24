@@ -1,8 +1,6 @@
 package com.inzapp.inzcrypt;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.util.Random;
 
 public class Inzcrypt {
     private Encrypter encrypter;
@@ -16,9 +14,9 @@ public class Inzcrypt {
     public static void main(String[] args) throws Exception {
         long st = System.currentTimeMillis();
         Inzcrypt inzcrypt = new Inzcrypt();
-        if (new File("1.txt").exists())
-            inzcrypt.encrypt(new File("1.txt"));
-        else inzcrypt.decrypt(new File("1.izc"));
+        if (new File("sample.jpg").exists())
+            inzcrypt.encrypt(new File("sample.jpg"));
+        else inzcrypt.decrypt(new File("sample.izc"));
         System.out.println(System.currentTimeMillis() - st);
     }
 

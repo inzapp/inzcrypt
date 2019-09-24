@@ -4,16 +4,29 @@ class Config {
     static final String KEY = ";%cx4Z6-Fw9E*2,*96K5iu52Y;1e8j4^";
     static final String AES_256 = "AES_256";
     static final String DES = "DES";
-    static final String BASE_64 = "BASE_64";
-    static final String CAESAR_64 = "CAESAR_64";
+    static final String CAESAR = "CAESAR";
     static final String XOR = "XOR";
+    static final String BASE_64 = "BASE_64";
     static final String REVERSE = "REVERSE";
     static final String BYTE_MAP_1 = "BYTE_MAP_1";
     static final String BYTE_MAP_2 = "BYTE_MAP_2";
     static final String BYTE_MAP_3 = "BYTE_MAP_3";
 
     static final String[] ENCRYPT_LAYER = new String[]{
-            CAESAR_64
+            CAESAR,
+            BYTE_MAP_1,
+            XOR,
+            BYTE_MAP_2,
+            CAESAR,
+            REVERSE,
+            BYTE_MAP_3,
+            AES_256,
+            AES_256,
+            AES_256,
+            BYTE_MAP_3,
+            BYTE_MAP_3,
+            BYTE_MAP_2,
+            BYTE_MAP_1
     };
 
     static final byte[][] MAP_1 = new byte[][]{
