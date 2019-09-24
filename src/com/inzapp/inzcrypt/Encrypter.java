@@ -67,6 +67,7 @@ class Encrypter {
         String fileNameWithoutExtension = getFileNameWithoutExtension(file);
 
         byte[] bytes = Files.readAllBytes(file.toPath());
+        System.out.println("saving file name : " + fileNameWithExtension);
         bytes = addOriginalFileNameToLastLine(bytes, fileNameWithExtension);
 
         for (int i = 0; i < Config.ENCRYPT_LAYER.length; ++i) {
@@ -101,7 +102,8 @@ class Encrypter {
 
                 case Config.CAESAR_64:
 //                    bytes = caesar64(bytes);
-                    bytes = caesar222(bytes);
+//                    bytes = caesar222(bytes);
+                    bytes = caesar2223(bytes);
                     break;
 
                 case Config.REVERSE:
@@ -267,6 +269,17 @@ class Encrypter {
         byte caesarKey = caesarKeyBuffer[7];
         for (int i = 0; i < bytes.length; ++i) {
             byte b = (byte) (((bytes[i] & 0xFF) + caesarKey));
+            bytes[i] = (byte) (b % 0xFF);
+        }
+        return appendNewLineAsEncrypted(bytes, caesarKeyBuffer);
+    }
+
+    private byte[] caesar2223(byte[] bytes) throws Exception {
+        String caesarKey = generateRandomKey();
+        byte[] caesarKeyBuffer = caesarKey.getBytes(StandardCharsets.UTF_8);
+        byte realCaesarKey = caesarKeyBuffer[7];
+        for (int i = 0; i < bytes.length; ++i) {
+            byte b = (byte) (((bytes[i] & 0xFF) + realCaesarKey));
             bytes[i] = (byte) (b % 0xFF);
         }
         return appendNewLineAsEncrypted(bytes, caesarKeyBuffer);

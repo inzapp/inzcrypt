@@ -63,6 +63,7 @@ class Decrypter {
             }
         }
         String originalName = getOriginalNameFromFileAndReplaceThemEmpty(bytes);
+        System.out.println(originalName);
         bytes = removeLastLine(bytes);
 //        bytes = new String(bytes, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
         Files.write(file.toPath(), bytes);
@@ -151,7 +152,7 @@ class Decrypter {
         Cipher cipher = Cipher.getInstance("DES");
         DESKeySpec desKeySpec = new DESKeySpec(desKeyBytes);
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
-        SecretKey secretKey =  secretKeyFactory.generateSecret(desKeySpec);
+        SecretKey secretKey = secretKeyFactory.generateSecret(desKeySpec);
         cipher.init(Cipher.DECRYPT_MODE, secretKey);
         return cipher.doFinal(bytes);
     }
@@ -197,10 +198,12 @@ class Decrypter {
     }
 
     private byte[] caesar222(byte[] bytes) throws Exception {
-        byte[] caesarKeyBuffer = decryptKeyFromLastLine(bytes);
-        byte caesarKey = caesarKeyBuffer[7];
+        byte[] caesarKeyBytes = decryptKeyFromLastLine(bytes);
+        bytes = removeLastLine(bytes);
+
+        byte realCaesarKey = caesarKeyBytes[7];
         for (int i = 0; i < bytes.length; ++i) {
-            byte b = (byte) (((bytes[i] & 0xFF) - caesarKey));
+            byte b = (byte) (((bytes[i] & 0xFF) - realCaesarKey));
             bytes[i] = (byte) (b % 0xFF);
         }
         return bytes;
