@@ -105,22 +105,6 @@ class Decrypter {
         return cipher.doFinal(bytes);
     }
 
-    private String getEncryptedKeyFromLastLine(byte[] bytes) {
-        List<Byte> reversedByteList = new ArrayList<>();
-        for (int i = bytes.length - 1; i >= 0; --i) {
-            if (bytes[i] == '\n') {
-                bytes[i] = ' ';
-                break;
-            }
-            reversedByteList.add(bytes[i]);
-            bytes[i] = ' ';
-        }
-        byte[] encryptedKeyBytes = new byte[reversedByteList.size()];
-        for (int dec = reversedByteList.size() - 1, inc = 0; dec >= 0; --dec, ++inc)
-            encryptedKeyBytes[inc] = reversedByteList.get(dec);
-        return new String(encryptedKeyBytes, StandardCharsets.UTF_8);
-    }
-
     private byte[] decryptKeyFromLastLine(byte[] bytes) throws Exception {
         List<Byte> reversedKeyByteList = new ArrayList<>();
         for (int i = bytes.length - 1; i >= 0; --i) {
@@ -144,29 +128,9 @@ class Decrypter {
                 break;
             }
         }
-        byte[] buffer = new byte[endIdx + 1];
-        System.arraycopy(bytes, 0, buffer, 0, endIdx + 1);
+        byte[] buffer = new byte[endIdx];
+        System.arraycopy(bytes, 0, buffer, 0, endIdx);
         return buffer;
-//        return new String(bytes, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
-    }
-
-    private String decryptKey(String encryptedKey) throws Exception {
-        String key = Config.KEY;
-        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
-        SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, "AES");
-
-        String iv = key.substring(0, 16);
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
-
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec/*, ivParameterSpec*/);
-
-        System.out.println(encryptedKey); // TODO
-        byte[] encryptedKeyBytes = encryptedKey.getBytes(StandardCharsets.UTF_8);
-        encryptedKeyBytes = base64(encryptedKeyBytes);
-        System.out.println(new String(encryptedKeyBytes)); // TODO
-        byte[] decryptedKeyBytes = cipher.doFinal(encryptedKeyBytes);
-        return new String(decryptedKeyBytes, StandardCharsets.UTF_8);
     }
 
     private byte[] decryptKey2(byte[] encryptedKeyBytes) throws Exception {
@@ -178,21 +142,15 @@ class Decrypter {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         SecretKeySpec secretKeySpec = new SecretKeySpec(keyForKeyBytes, "AES");
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(ivBytes));
+        encryptedKeyBytes = base64(encryptedKeyBytes);
         return cipher.doFinal(encryptedKeyBytes);
     }
 
-    private byte[] des(byte[] bytes) throws Exception {
-        Cipher cipher = Cipher.getInstance("DES");
-        DESKeySpec desKeySpec = new DESKeySpec(Config.KEY.getBytes(StandardCharsets.UTF_8));
-        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
-        Key key = secretKeyFactory.generateSecret(desKeySpec);
-        cipher.init(Cipher.DECRYPT_MODE, key);
-        return cipher.doFinal(bytes);
-    }
-
     private byte[] des2(byte[] bytes) throws Exception {
+        System.out.println("before: \n" + new String(bytes, StandardCharsets.UTF_8));
         byte[] desKeyBytes = decryptKeyFromLastLine(bytes);
         bytes = removeLastLine(bytes);
+        System.out.print("after: \n" + new String(bytes, StandardCharsets.UTF_8));
 
         Cipher cipher = Cipher.getInstance("DES");
         DESKeySpec desKeySpec = new DESKeySpec(desKeyBytes);

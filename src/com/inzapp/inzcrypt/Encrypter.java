@@ -286,6 +286,7 @@ class Encrypter {
 
     private byte[] appendNewLineAsEncrypted(byte[] bytes, byte[] appendBytes) throws Exception {
         appendBytes = encryptKey(appendBytes);
+        appendBytes = base64(appendBytes);
         byte[] newLine = new byte[]{'\n'};
         byte[] buffer = new byte[bytes.length + newLine.length + appendBytes.length];
         System.arraycopy(bytes, 0, buffer, 0, bytes.length);

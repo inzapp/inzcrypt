@@ -3,9 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="ec78b75f-84e9-4034-b53b-d2c63d96564a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.izc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Config.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Config.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Decrypter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Decrypter.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Encrypter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Encrypter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Config.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Decrypter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Decrypter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Encrypter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Encrypter.java" afterDir="false" />
     </list>
