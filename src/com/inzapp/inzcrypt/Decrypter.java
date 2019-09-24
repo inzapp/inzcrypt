@@ -24,8 +24,8 @@ class Decrypter {
             switch (Config.ENCRYPT_LAYER[i]) {
                 case Config.AES_256:
 //                    bytes = aes256(bytes);
-                    bytes = AES256Cipher.AES_Decode(bytes);
-//                    bytes = aes256Test(bytes);
+//                    bytes = AES256Cipher.AES_Decode(bytes);
+                    bytes = aes256Test(bytes);
                     break;
 
                 case Config.DES:
@@ -93,19 +93,15 @@ class Decrypter {
     }
 
     private byte[] aes256Test(byte[] bytes) throws Exception {
-        String encryptedKey = getEncryptedKeyFromLastLine(bytes);
+        byte[] aesKeyBytes = decryptKeyFromLastLine(bytes);
         bytes = removeLastLine(bytes);
-        System.out.println(new String(bytes, StandardCharsets.UTF_8));
-        String decryptedKey = decryptKey(encryptedKey);
 
-        byte[] decryptedKeyBytes = decryptedKey.getBytes(StandardCharsets.UTF_8);
-        SecretKeySpec secretKeySpec = new SecretKeySpec(decryptedKeyBytes, "AES");
+        SecretKeySpec secretKeySpec = new SecretKeySpec(aesKeyBytes, "AES");
+        byte[] ivBytes = new byte[16];
+        System.arraycopy(aesKeyBytes, 0, ivBytes, 0, 16);
 
-        String iv = decryptedKey.substring(0, 16);
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
-
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec/*, ivParameterSpec*/);
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(ivBytes));
         return cipher.doFinal(bytes);
     }
 

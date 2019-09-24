@@ -73,8 +73,8 @@ class Encrypter {
             switch (Config.ENCRYPT_LAYER[i]) {
                 case Config.AES_256:
 //                    bytes = aes256WithSha1(bytes);
-                    bytes = AES256Cipher.AES_Encode(bytes);
-//                    bytes = aes256Test(bytes);
+//                    bytes = AES256Cipher.AES_Encode(bytes);
+                    bytes = aes256Test(bytes);
                     break;
 
                 case Config.DES:
@@ -158,10 +158,11 @@ class Encrypter {
         byte[] aesKeyBytes = aesKey.getBytes(StandardCharsets.UTF_8);
         SecretKeySpec secretKeySpec = new SecretKeySpec(aesKeyBytes, "AES");
 
-        String iv = aesKey.substring(0, 16);
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
+        byte[] ivBytes = new byte[16];
+        System.arraycopy(aesKeyBytes, 0, ivBytes, 0, 16);
+
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, new IvParameterSpec(ivBytes));
 
         bytes = cipher.doFinal(bytes);
         return appendNewLineAsEncrypted(bytes, aesKeyBytes);
