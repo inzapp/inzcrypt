@@ -166,6 +166,7 @@ class Decrypter {
 
         ByteBuffer byteBuffer = ByteBuffer.allocate(Long.BYTES);
         byteBuffer.put(xorKeyBytes);
+        byteBuffer.flip();
         long xorKey = byteBuffer.getLong();
 
         for (int i = 0; i < bytes.length; ++i)
