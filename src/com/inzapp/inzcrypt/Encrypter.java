@@ -25,7 +25,6 @@ class Encrypter {
         String fileNameWithoutExtension = getFileNameWithoutExtension(file);
 
         byte[] bytes = Files.readAllBytes(file.toPath());
-        System.out.println("saving file name : " + fileNameWithExtension);
         bytes = addOriginalFileNameToLastLine(bytes, fileNameWithExtension);
 
         for (int i = 0; i < Config.ENCRYPT_LAYER.length; ++i) {
