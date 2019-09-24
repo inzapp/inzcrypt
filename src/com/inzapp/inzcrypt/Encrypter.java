@@ -174,7 +174,7 @@ class Encrypter {
                 '`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+',
                 '[', '{', ']', '}', '\\', '|', ';', ':', '\'', '"', ',', '<', '.', '>', '/', '?'
         };
-        for (int i = 0; i < 256 / 8; ++i) {
+        for (int i = 0; i < 256 / 8; ++i) { // 256 bit key
             int rand = random.nextInt(4);
             switch (rand) {
                 case 0:
@@ -206,7 +206,7 @@ class Encrypter {
         byte[] ivBytes = new byte[16];
         System.arraycopy(keyForKeyBytes, 0, ivBytes, 0, 16);
 
-        Cipher cipher = Cipher.getInstance("AES");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         SecretKeySpec secretKeySpec = new SecretKeySpec(keyForKeyBytes, "AES");
         cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, new IvParameterSpec(ivBytes));
         return cipher.doFinal(keyBytes);
