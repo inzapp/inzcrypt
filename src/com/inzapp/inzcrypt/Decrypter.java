@@ -2,6 +2,7 @@ package com.inzapp.inzcrypt;
 
 import com.inzapp.inzcrypt.exception.WrongPasswordException;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -14,7 +15,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -30,10 +30,10 @@ class Decrypter {
     }
 
     byte[] decrypt(byte[] bytes) throws Exception {
-        for (int i = Config.ENCRYPT_LAYERS.size() - 1; i >= 0; --i) {
-            switch (Config.ENCRYPT_LAYERS.get(i)) {
-                case AES_256:
-                    bytes = aes256(bytes);
+        for (int i = Config.getEncryptLayers().size() - 1; i >= 0; --i) {
+            switch (Config.getEncryptLayers().get(i)) {
+                case AES:
+                    bytes = aes(bytes);
                     break;
 
                 case DES:
@@ -77,14 +77,15 @@ class Decrypter {
 
         byte[] saltBytes = new byte[20];
         byteBuffer.get(saltBytes, 0, saltBytes.length);
+
         byte[] ivBytes = new byte[cipher.getBlockSize()];
         byteBuffer.get(ivBytes, 0, ivBytes.length);
+
         byte[] encryptedTextBytes = new byte[byteBuffer.capacity() - saltBytes.length - ivBytes.length];
         byteBuffer.get(encryptedTextBytes);
 
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         PBEKeySpec pbeKeySpec = new PBEKeySpec(Config.getPassword().toCharArray(), saltBytes, 64, 256);
-
         SecretKey secretKey = secretKeyFactory.generateSecret(pbeKeySpec);
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getEncoded(), "AES");
 
@@ -92,11 +93,11 @@ class Decrypter {
         return cipher.doFinal(encryptedTextBytes);
     }
 
-    private byte[] aes256(byte[] bytes) throws Exception {
+    private byte[] aes(byte[] bytes) throws Exception {
         byte[] aesKeyBytes = decryptKeyFromLastLine(bytes);
         bytes = removeLastLine(bytes);
-
         SecretKeySpec secretKeySpec = new SecretKeySpec(aesKeyBytes, "AES");
+
         byte[] ivBytes = new byte[16];
         System.arraycopy(aesKeyBytes, 0, ivBytes, 0, 16);
 
@@ -109,10 +110,11 @@ class Decrypter {
         byte[] desKeyBytes = decryptKeyFromLastLine(bytes);
         bytes = removeLastLine(bytes);
 
-        Cipher cipher = Cipher.getInstance("DES");
         DESKeySpec desKeySpec = new DESKeySpec(desKeyBytes);
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
         SecretKey secretKey = secretKeyFactory.generateSecret(desKeySpec);
+
+        Cipher cipher = Cipher.getInstance("DES");
         cipher.init(Cipher.DECRYPT_MODE, secretKey);
         return cipher.doFinal(bytes);
     }
@@ -124,8 +126,8 @@ class Decrypter {
         ByteBuffer byteBuffer = ByteBuffer.allocate(Long.BYTES);
         byteBuffer.put(xorKeyBytes);
         byteBuffer.flip();
-        long xorKey = byteBuffer.getLong();
 
+        long xorKey = byteBuffer.getLong();
         for (int i = 0; i < bytes.length; ++i)
             bytes[i] = (byte) (bytes[i] ^ xorKey);
         return bytes;
@@ -176,6 +178,7 @@ class Decrypter {
             reversedKeyByteList.add(bytes[i]);
             bytes[i] = ' ';
         }
+
         byte[] reversedKeyBytes = new byte[reversedKeyByteList.size()];
         for (int i = 0; i < reversedKeyBytes.length; ++i)
             reversedKeyBytes[i] = reversedKeyByteList.get(i);
@@ -186,18 +189,20 @@ class Decrypter {
     private byte[] decryptKey(byte[] encryptedKeyBytes) throws Exception {
         String keyForKey = Config.getPassword();
         byte[] keyForKeyBytes = keyForKey.getBytes(StandardCharsets.UTF_8);
+
         byte[] ivBytes = new byte[16];
         System.arraycopy(keyForKeyBytes, 0, ivBytes, 0, 16);
 
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         SecretKeySpec secretKeySpec = new SecretKeySpec(keyForKeyBytes, "AES");
-        try {
-            cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(ivBytes));
-        } catch (InvalidKeyException e) {
-            throw new WrongPasswordException("password wrong");
-        }
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(ivBytes));
+
         encryptedKeyBytes = base64(encryptedKeyBytes);
-        return cipher.doFinal(encryptedKeyBytes);
+        try {
+            return cipher.doFinal(encryptedKeyBytes);
+        } catch (BadPaddingException e) {
+            throw new WrongPasswordException("password is wrong");
+        }
     }
 
     private byte[] removeLastLine(byte[] bytes) {
@@ -232,6 +237,7 @@ class Decrypter {
         String[] iso = file.getAbsolutePath().split("\\\\");
         for (int i = 0; i < iso.length - 1; ++i)
             originalPathBuilder.append(iso[i]).append('\\');
+
         originalPathBuilder.append(originalFileName);
         File originalFile = new File(originalPathBuilder.toString());
         Files.move(file.toPath(), originalFile.toPath());

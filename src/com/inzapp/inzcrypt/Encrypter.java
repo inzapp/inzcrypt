@@ -31,10 +31,10 @@ class Encrypter {
     }
 
     byte[] encrypt(byte[] bytes) throws Exception {
-        for (int i = 0; i < Config.ENCRYPT_LAYERS.size(); ++i) {
-            switch (Config.ENCRYPT_LAYERS.get(i)) {
-                case AES_256:
-                    bytes = aes256(bytes);
+        for (int i = 0; i < Config.getEncryptLayers().size(); ++i) {
+            switch (Config.getEncryptLayers().get(i)) {
+                case AES:
+                    bytes = aes(bytes);
                     break;
 
                 case DES:
@@ -75,7 +75,6 @@ class Encrypter {
     private String getFileNameWithoutExtension(File file) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
-
         String fileName = file.getName();
         String[] iso = fileName.split("\\.");
         StringBuilder rawFileNameBuilder = new StringBuilder();
@@ -101,10 +100,12 @@ class Encrypter {
         SecureRandom secureRandom = new SecureRandom();
         byte[] saltBytes = new byte[20];
         secureRandom.nextBytes(saltBytes);
+
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         PBEKeySpec pbeKeySpec = new PBEKeySpec(Config.getPassword().toCharArray(), saltBytes, 64, 256);
         SecretKey secretKey = secretKeyFactory.generateSecret(pbeKeySpec);
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getEncoded(), "AES");
+
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
         AlgorithmParameters algorithmParameters = cipher.getParameters();
@@ -119,7 +120,7 @@ class Encrypter {
         return buffer;
     }
 
-    private byte[] aes256(byte[] bytes) throws Exception {
+    private byte[] aes(byte[] bytes) throws Exception {
         String aesKey = generateRandomKey();
         byte[] aesKeyBytes = aesKey.getBytes(StandardCharsets.UTF_8);
         SecretKeySpec secretKeySpec = new SecretKeySpec(aesKeyBytes, "AES");
@@ -129,7 +130,6 @@ class Encrypter {
 
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, new IvParameterSpec(ivBytes));
-
         bytes = cipher.doFinal(bytes);
         return appendNewLineAsEncrypted(bytes, aesKeyBytes);
     }
@@ -142,6 +142,7 @@ class Encrypter {
         DESKeySpec desKeySpec = new DESKeySpec(desKeyBytes);
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("DES");
         SecretKey secretKey = secretKeyFactory.generateSecret(desKeySpec);
+
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         bytes = cipher.doFinal(bytes);
         return appendNewLineAsEncrypted(bytes, desKeyBytes);
@@ -162,6 +163,7 @@ class Encrypter {
         String caesarKey = generateRandomKey();
         byte[] caesarKeyBuffer = caesarKey.getBytes(StandardCharsets.UTF_8);
         byte realCaesarKey = caesarKeyBuffer[7];
+
         for (int i = 0; i < bytes.length; ++i) {
             byte b = (byte) (((bytes[i] & 0xFF) + realCaesarKey));
             bytes[i] = (byte) (b % 0xFF);
@@ -241,6 +243,7 @@ class Encrypter {
     private byte[] encryptKey(byte[] plainKeyBytes) throws Exception {
         String keyForKey = Config.getPassword();
         byte[] keyForKeyBytes = keyForKey.getBytes(StandardCharsets.UTF_8);
+
         byte[] ivBytes = new byte[16];
         System.arraycopy(keyForKeyBytes, 0, ivBytes, 0, 16);
 
@@ -253,13 +256,12 @@ class Encrypter {
     private void renameToIzcExtension(File file, String originalFileNameWithoutExtension) throws Exception {
         if (!file.exists())
             throw new FileNotFoundException();
-
         String[] iso = file.getAbsolutePath().split("\\\\");
         StringBuilder izcPathBuilder = new StringBuilder();
         for (int i = 0; i < iso.length - 1; ++i)
             izcPathBuilder.append(iso[i]).append('\\');
-        izcPathBuilder.append(originalFileNameWithoutExtension).append(".izc");
 
+        izcPathBuilder.append(originalFileNameWithoutExtension).append(".izc");
         File izcFile = new File(izcPathBuilder.toString());
         Files.move(file.toPath(), izcFile.toPath());
     }

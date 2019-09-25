@@ -1,7 +1,7 @@
 package com.inzapp.inzcrypt;
 
 public enum EncryptLayer {
-    AES_256,
+    AES,
     DES,
     CAESAR,
     XOR,
