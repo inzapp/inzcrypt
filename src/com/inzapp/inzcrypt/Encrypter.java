@@ -35,41 +35,41 @@ class Encrypter {
     }
 
     byte[] encrypt(byte[] bytes) throws Exception {
-        for (int i = 0; i < Config.ENCRYPT_LAYER.length; ++i) {
-            switch (Config.ENCRYPT_LAYER[i]) {
-                case Config.AES_256:
+        for (int i = 0; i < Config.ENCRYPT_LAYERS.size(); ++i) {
+            switch (Config.ENCRYPT_LAYERS.get(i)) {
+                case AES_256:
                     bytes = aes256(bytes);
                     break;
 
-                case Config.DES:
+                case DES:
                     bytes = des(bytes);
                     break;
 
-                case Config.CAESAR:
+                case CAESAR:
                     bytes = caesar(bytes);
                     break;
 
-                case Config.XOR:
+                case XOR:
                     bytes = xor(bytes);
                     break;
 
-                case Config.BASE_64:
+                case BASE_64:
                     bytes = base64(bytes);
                     break;
 
-                case Config.REVERSE:
+                case REVERSE:
                     bytes = reverse(bytes);
                     break;
 
-                case Config.BYTE_MAP_1:
+                case BYTE_MAP_1:
                     bytes = byteMap(bytes, Config.MAP_1);
                     break;
 
-                case Config.BYTE_MAP_2:
+                case BYTE_MAP_2:
                     bytes = byteMap(bytes, Config.MAP_2);
                     break;
 
-                case Config.BYTE_MAP_3:
+                case BYTE_MAP_3:
                     bytes = byteMap(bytes, Config.MAP_3);
                     break;
 

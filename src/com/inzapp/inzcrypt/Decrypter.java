@@ -1,5 +1,8 @@
 package com.inzapp.inzcrypt;
 
+import com.inzapp.inzcrypt.exception.InvalidPasswordException;
+import com.inzapp.inzcrypt.exception.WrongPasswordException;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -12,6 +15,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -31,41 +35,41 @@ class Decrypter {
     }
 
     byte[] decrypt(byte[] bytes) throws Exception {
-        for (int i = Config.ENCRYPT_LAYER.length - 1; i >= 0; --i) {
-            switch (Config.ENCRYPT_LAYER[i]) {
-                case Config.AES_256:
+        for (int i = Config.ENCRYPT_LAYERS.size() - 1; i >= 0; --i) {
+            switch (Config.ENCRYPT_LAYERS.get(i)) {
+                case AES_256:
                     bytes = aes256(bytes);
                     break;
 
-                case Config.DES:
+                case DES:
                     bytes = des(bytes);
                     break;
 
-                case Config.XOR:
+                case XOR:
                     bytes = xor(bytes);
                     break;
 
-                case Config.CAESAR:
+                case CAESAR:
                     bytes = caesar(bytes);
                     break;
 
-                case Config.REVERSE:
+                case REVERSE:
                     bytes = reverse(bytes);
                     break;
 
-                case Config.BASE_64:
+                case BASE_64:
                     bytes = base64(bytes);
                     break;
 
-                case Config.BYTE_MAP_1:
+                case BYTE_MAP_1:
                     bytes = byteMap(bytes, Config.MAP_1);
                     break;
 
-                case Config.BYTE_MAP_2:
+                case BYTE_MAP_2:
                     bytes = byteMap(bytes, Config.MAP_2);
                     break;
 
-                case Config.BYTE_MAP_3:
+                case BYTE_MAP_3:
                     bytes = byteMap(bytes, Config.MAP_3);
                     break;
 
@@ -196,7 +200,12 @@ class Decrypter {
 
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         SecretKeySpec secretKeySpec = new SecretKeySpec(keyForKeyBytes, "AES");
-        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(ivBytes));
+        try {
+            cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(ivBytes));
+        } catch(InvalidKeyException e) {
+            throw new WrongPasswordException("password wrong");
+        }
+
         encryptedKeyBytes = base64(encryptedKeyBytes);
         return cipher.doFinal(encryptedKeyBytes);
     }
