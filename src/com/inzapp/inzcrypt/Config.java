@@ -1,5 +1,8 @@
 package com.inzapp.inzcrypt;
 
+import java.util.LinkedList;
+import java.util.List;
+
 class Config {
     static final String KEY = ";%cx4Z6-Fw9E*2,*96K5iu52Y;1e8j4^";
     static final String AES_256 = "AES_256";
@@ -13,21 +16,13 @@ class Config {
     static final String BYTE_MAP_3 = "BYTE_MAP_3";
 
     static final String[] ENCRYPT_LAYER = new String[]{
-            CAESAR,
-            BYTE_MAP_1,
             XOR,
-            BYTE_MAP_2,
-            CAESAR,
-            REVERSE,
-            BYTE_MAP_3,
             AES_256,
-            AES_256,
-            AES_256,
-            BYTE_MAP_3,
-            BYTE_MAP_3,
-            BYTE_MAP_2,
-            BYTE_MAP_1
+            XOR,
+            CAESAR
     };
+
+    static List<EncryptLayer> ENCRYPT_LAYERS = new LinkedList<EncryptLayer>(){};
 
     static final byte[][] MAP_1 = new byte[][]{
             {-128, 27},

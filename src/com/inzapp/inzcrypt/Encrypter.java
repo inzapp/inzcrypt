@@ -23,10 +23,18 @@ class Encrypter {
     void encrypt(File file) throws Exception {
         String fileNameWithExtension = file.getName();
         String fileNameWithoutExtension = getFileNameWithoutExtension(file);
-
         byte[] bytes = Files.readAllBytes(file.toPath());
         bytes = addOriginalFileNameToLastLine(bytes, fileNameWithExtension);
+        bytes = encrypt(bytes);
+        Files.write(file.toPath(), bytes);
+        renameToIzcExtension(file, fileNameWithoutExtension);
+    }
 
+    String encrypt(String str) throws Exception {
+        return new String(this.encrypt(str.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
+    }
+
+    byte[] encrypt(byte[] bytes) throws Exception {
         for (int i = 0; i < Config.ENCRYPT_LAYER.length; ++i) {
             switch (Config.ENCRYPT_LAYER[i]) {
                 case Config.AES_256:
@@ -69,8 +77,7 @@ class Encrypter {
                     break;
             }
         }
-        Files.write(file.toPath(), bytes);
-        renameToIzcExtension(file, fileNameWithoutExtension);
+        return bytes;
     }
 
     private String getFileNameWithoutExtension(File file) throws Exception {

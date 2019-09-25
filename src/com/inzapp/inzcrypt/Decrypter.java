@@ -19,6 +19,18 @@ import java.util.List;
 class Decrypter {
     void decrypt(File file) throws Exception {
         byte[] bytes = Files.readAllBytes(file.toPath());
+        bytes = decrypt(bytes);
+        String originalName = getOriginalNameFromFileAndReplaceThemEmpty(bytes);
+        bytes = removeLastLine(bytes);
+        Files.write(file.toPath(), bytes);
+        renameToOriginalName(file, originalName);
+    }
+
+    String decrypt(String encryptedStr) throws Exception {
+        return new String(this.decrypt(encryptedStr.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
+    }
+
+    byte[] decrypt(byte[] bytes) throws Exception {
         for (int i = Config.ENCRYPT_LAYER.length - 1; i >= 0; --i) {
             switch (Config.ENCRYPT_LAYER[i]) {
                 case Config.AES_256:
@@ -61,10 +73,7 @@ class Decrypter {
                     break;
             }
         }
-        String originalName = getOriginalNameFromFileAndReplaceThemEmpty(bytes);
-        bytes = removeLastLine(bytes);
-        Files.write(file.toPath(), bytes);
-        renameToOriginalName(file, originalName);
+        return bytes;
     }
 
     private byte[] aes256WithSha1(byte[] bytes) throws Exception {
