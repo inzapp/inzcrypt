@@ -19,6 +19,7 @@ public class Inzcrypt {
         long st = System.currentTimeMillis();
         Inzcrypt inzcrypt = new Inzcrypt();
         inzcrypt.addEncryptLayer(EncryptLayer.AES_256);
+        inzcrypt.addEncryptLayer(EncryptLayer.valueOf("AES_256a"));
 //        byte[] res = inzcrypt.encrypt("asd".getBytes(StandardCharsets.UTF_8));
 //        byte[] bok = inzcrypt.decrypt(res);
 //        System.out.println(new String(bok));
@@ -42,7 +43,7 @@ public class Inzcrypt {
         Config.KEY = password;
     }
 
-    public void saveConfiguration(String fileName) {
+    public void save(String fileName) {
 
     }
 
