@@ -1,8 +1,6 @@
 package com.inzapp.inzcrypt;
 
-import com.inzapp.inzcrypt.exception.InvalidPasswordException;
 import com.inzapp.inzcrypt.exception.WrongPasswordException;
-import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -153,10 +151,6 @@ class Decrypter {
         return Base64.getDecoder().decode(bytes);
     }
 
-    private byte[] hex(byte[] bytes) {
-        return HexBin.decode(new String(bytes, StandardCharsets.UTF_8));
-    }
-
     private byte[] reverse(byte[] bytes) {
         byte[] reversedBytes = new byte[bytes.length];
         for (int dec = bytes.length - 1, inc = 0; dec >= 0; --dec, ++inc)
@@ -203,7 +197,7 @@ class Decrypter {
         SecretKeySpec secretKeySpec = new SecretKeySpec(keyForKeyBytes, "AES");
         try {
             cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(ivBytes));
-        } catch(InvalidKeyException e) {
+        } catch (InvalidKeyException e) {
             throw new WrongPasswordException("password wrong");
         }
 

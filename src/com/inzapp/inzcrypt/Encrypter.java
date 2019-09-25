@@ -1,7 +1,5 @@
 package com.inzapp.inzcrypt;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
-
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -210,10 +208,6 @@ class Encrypter {
 
     private byte[] base64(byte[] bytes) {
         return Base64.getEncoder().encode(bytes);
-    }
-
-    private byte[] hex(byte[] bytes) {
-        return HexBin.encode(bytes).getBytes(StandardCharsets.UTF_8);
     }
 
     private byte[] reverse(byte[] bytes) {
