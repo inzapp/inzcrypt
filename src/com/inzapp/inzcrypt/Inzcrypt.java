@@ -1,6 +1,7 @@
 package com.inzapp.inzcrypt;
 
 import com.inzapp.inzcrypt.exception.InvalidPasswordException;
+import com.inzapp.inzcrypt.exception.PasswordIsNotRequiredException;
 import com.inzapp.inzcrypt.exception.SecurityException;
 
 import java.io.File;
@@ -18,8 +19,9 @@ public class Inzcrypt {
     public static void main(String[] args) throws Exception {
         long st = System.currentTimeMillis();
         Inzcrypt inzcrypt = new Inzcrypt();
+        inzcrypt.addEncryptLayer(EncryptLayer.BYTE_MAP_1);
         inzcrypt.addEncryptLayer(EncryptLayer.DES);
-        inzcrypt.setPassword("asdfasdfasdfasdf");
+//        inzcrypt.setPassword("asdfasdfasdfasdf");
 //        byte[] res = inzcrypt.encrypt("asd".getBytes(StandardCharsets.UTF_8));
 //        byte[] bok = inzcrypt.decrypt(res);
 //        System.out.println(new String(bok));
@@ -52,26 +54,29 @@ public class Inzcrypt {
     }
 
     public void encrypt(File file) throws Exception {
-        if (Config.ENCRYPT_LAYERS.size() == 0)
-            throw new SecurityException("encrypt layers size must be over than 1");
+        checkException();
         this.encrypter.encrypt(file);
     }
 
     public void decrypt(File file) throws Exception {
-        if (Config.ENCRYPT_LAYERS.size() == 0)
-            throw new SecurityException("encrypt layers size must be over than 1");
+        checkException();
         this.decrypter.decrypt(file);
     }
 
     public byte[] encrypt(byte[] bytes) throws Exception {
-        if (Config.ENCRYPT_LAYERS.size() == 0)
-            throw new SecurityException("encrypt layers size must be over than 1");
+        checkException();
         return this.encrypter.encrypt(bytes);
     }
 
     public byte[] decrypt(byte[] encryptedBytes) throws Exception {
+        checkException();
+        return this.decrypter.decrypt(encryptedBytes);
+    }
+
+    private void checkException() throws Exception {
         if (Config.ENCRYPT_LAYERS.size() == 0)
             throw new SecurityException("encrypt layers size must be over than 1");
-        return this.decrypter.decrypt(encryptedBytes);
+        if(Config.checkPasswordIsInvalid())
+            throw new PasswordIsNotRequiredException("no password is required for defined layers");
     }
 }

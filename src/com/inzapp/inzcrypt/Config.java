@@ -6,15 +6,32 @@ import java.util.List;
 class Config {
     private static String KEY = ";%cx4Z6-Fw9E*2,*96K5iu52Y;1e8j4^";
     private static boolean KEY_CHANGED = false;
+
     static List<EncryptLayer> ENCRYPT_LAYERS = new LinkedList<>();
 
-    public static void setPassword(String password) {
+    static void setPassword(String password) {
         KEY = password;
         KEY_CHANGED = true;
     }
 
-    public static String getPassword() {
+    static String getPassword() {
         return KEY;
+    }
+
+    static boolean checkPasswordIsInvalid() {
+        if (!KEY_CHANGED)
+            return false;
+        EncryptLayer[] passwordRequiredEncryptLayers = new EncryptLayer[]{
+                EncryptLayer.AES_256,
+                EncryptLayer.DES
+        };
+        for (EncryptLayer encryptLayer : ENCRYPT_LAYERS) {
+            for (EncryptLayer passwordRequiredEncryptLayer : passwordRequiredEncryptLayers) {
+                if (encryptLayer.equals(passwordRequiredEncryptLayer))
+                    return false;
+            }
+        }
+        return true;
     }
 
     static final byte[][] MAP_1 = new byte[][]{
