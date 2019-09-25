@@ -2,6 +2,7 @@ package com.inzapp.inzcrypt;
 
 import com.inzapp.inzcrypt.exception.InvalidPasswordException;
 import com.inzapp.inzcrypt.exception.WrongPasswordException;
+import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -30,11 +31,8 @@ class Decrypter {
         renameToOriginalName(file, originalName);
     }
 
-    String decrypt(String encryptedStr) throws Exception {
-        return new String(this.decrypt(encryptedStr.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
-    }
-
     byte[] decrypt(byte[] bytes) throws Exception {
+        bytes = hex(bytes);
         for (int i = Config.ENCRYPT_LAYERS.size() - 1; i >= 0; --i) {
             switch (Config.ENCRYPT_LAYERS.get(i)) {
                 case AES_256:
@@ -47,6 +45,10 @@ class Decrypter {
 
                 case XOR:
                     bytes = xor(bytes);
+                    break;
+
+                case HEX:
+                    bytes = hex(bytes);
                     break;
 
                 case CAESAR:
@@ -154,6 +156,10 @@ class Decrypter {
 
     private byte[] base64(byte[] bytes) {
         return Base64.getDecoder().decode(bytes);
+    }
+
+    private byte[] hex(byte[] bytes) {
+        return HexBin.decode(new String(bytes, StandardCharsets.UTF_8));
     }
 
     private byte[] reverse(byte[] bytes) {

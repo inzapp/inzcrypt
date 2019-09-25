@@ -1,5 +1,7 @@
 package com.inzapp.inzcrypt;
 
+import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -30,10 +32,6 @@ class Encrypter {
         renameToIzcExtension(file, fileNameWithoutExtension);
     }
 
-    String encrypt(String str) throws Exception {
-        return new String(this.encrypt(str.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
-    }
-
     byte[] encrypt(byte[] bytes) throws Exception {
         for (int i = 0; i < Config.ENCRYPT_LAYERS.size(); ++i) {
             switch (Config.ENCRYPT_LAYERS.get(i)) {
@@ -51,6 +49,10 @@ class Encrypter {
 
                 case XOR:
                     bytes = xor(bytes);
+                    break;
+
+                case HEX:
+                    bytes = hex(bytes);
                     break;
 
                 case BASE_64:
@@ -77,6 +79,7 @@ class Encrypter {
                     break;
             }
         }
+        bytes = hex(bytes);
         return bytes;
     }
 
@@ -212,6 +215,10 @@ class Encrypter {
 
     private byte[] base64(byte[] bytes) {
         return Base64.getEncoder().encode(bytes);
+    }
+
+    private byte[] hex(byte[] bytes) {
+        return HexBin.encode(bytes).getBytes(StandardCharsets.UTF_8);
     }
 
     private byte[] reverse(byte[] bytes) {
