@@ -5,7 +5,7 @@ public enum EncryptLayer {
     DES,
     CAESAR,
     XOR,
-    HEX,
+//    HEX,
     BASE_64,
     REVERSE,
     BYTE_MAP_1,

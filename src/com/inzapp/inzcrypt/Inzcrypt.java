@@ -4,7 +4,6 @@ import com.inzapp.inzcrypt.exception.InvalidPasswordException;
 import com.inzapp.inzcrypt.exception.SecurityException;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class Inzcrypt {
@@ -19,19 +18,13 @@ public class Inzcrypt {
     public static void main(String[] args) throws Exception {
         long st = System.currentTimeMillis();
         Inzcrypt inzcrypt = new Inzcrypt();
-        inzcrypt.addEncryptLayer(EncryptLayer.HEX);
-        inzcrypt.addEncryptLayer(EncryptLayer.HEX);
-        inzcrypt.addEncryptLayer(EncryptLayer.HEX);
-        inzcrypt.addEncryptLayer(EncryptLayer.HEX);
-        inzcrypt.addEncryptLayer(EncryptLayer.HEX);
-        inzcrypt.addEncryptLayer(EncryptLayer.HEX);
-        inzcrypt.addEncryptLayer(EncryptLayer.HEX);
+        inzcrypt.addEncryptLayer(EncryptLayer.AES_256);
 //        byte[] res = inzcrypt.encrypt("asd".getBytes(StandardCharsets.UTF_8));
 //        byte[] bok = inzcrypt.decrypt(res);
 //        System.out.println(new String(bok));
-        if (new File("sudoku.mp4").exists())
-            inzcrypt.encrypt(new File("sudoku.mp4"));
-        else inzcrypt.decrypt(new File("sudoku.izc"));
+        if (new File("sample.jpg").exists())
+            inzcrypt.encrypt(new File("sample.jpg"));
+        else inzcrypt.decrypt(new File("sample.izc"));
         System.out.println(System.currentTimeMillis() - st);
     }
 

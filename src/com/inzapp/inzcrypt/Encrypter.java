@@ -51,10 +51,6 @@ class Encrypter {
                     bytes = xor(bytes);
                     break;
 
-                case HEX:
-                    bytes = hex(bytes);
-                    break;
-
                 case BASE_64:
                     bytes = base64(bytes);
                     break;
@@ -79,7 +75,6 @@ class Encrypter {
                     break;
             }
         }
-        bytes = hex(bytes);
         return bytes;
     }
 

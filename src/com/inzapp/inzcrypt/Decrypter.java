@@ -32,7 +32,6 @@ class Decrypter {
     }
 
     byte[] decrypt(byte[] bytes) throws Exception {
-        bytes = hex(bytes);
         for (int i = Config.ENCRYPT_LAYERS.size() - 1; i >= 0; --i) {
             switch (Config.ENCRYPT_LAYERS.get(i)) {
                 case AES_256:
@@ -45,10 +44,6 @@ class Decrypter {
 
                 case XOR:
                     bytes = xor(bytes);
-                    break;
-
-                case HEX:
-                    bytes = hex(bytes);
                     break;
 
                 case CAESAR:
