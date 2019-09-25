@@ -52,10 +52,6 @@ class Decrypter {
                     bytes = reverse(bytes);
                     break;
 
-                case BASE_64:
-                    bytes = base64(bytes);
-                    break;
-
                 case BYTE_MAP_1:
                     bytes = byteMap(bytes, Config.MAP_1);
                     break;
@@ -87,7 +83,7 @@ class Decrypter {
         byteBuffer.get(encryptedTextBytes);
 
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        PBEKeySpec pbeKeySpec = new PBEKeySpec(Config.KEY.toCharArray(), saltBytes, 64, 256);
+        PBEKeySpec pbeKeySpec = new PBEKeySpec(Config.getPassword().toCharArray(), saltBytes, 64, 256);
 
         SecretKey secretKey = secretKeyFactory.generateSecret(pbeKeySpec);
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getEncoded(), "AES");
@@ -188,7 +184,7 @@ class Decrypter {
     }
 
     private byte[] decryptKey(byte[] encryptedKeyBytes) throws Exception {
-        String keyForKey = Config.KEY;
+        String keyForKey = Config.getPassword();
         byte[] keyForKeyBytes = keyForKey.getBytes(StandardCharsets.UTF_8);
         byte[] ivBytes = new byte[16];
         System.arraycopy(keyForKeyBytes, 0, ivBytes, 0, 16);
@@ -200,7 +196,6 @@ class Decrypter {
         } catch (InvalidKeyException e) {
             throw new WrongPasswordException("password wrong");
         }
-
         encryptedKeyBytes = base64(encryptedKeyBytes);
         return cipher.doFinal(encryptedKeyBytes);
     }

@@ -4,8 +4,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 class Config {
-    static String KEY = ";%cx4Z6-Fw9E*2,*96K5iu52Y;1e8j4^";
+    private static String KEY = ";%cx4Z6-Fw9E*2,*96K5iu52Y;1e8j4^";
+    private static boolean KEY_CHANGED = false;
     static List<EncryptLayer> ENCRYPT_LAYERS = new LinkedList<>();
+
+    public static void setPassword(String password) {
+        KEY = password;
+        KEY_CHANGED = true;
+    }
+
+    public static String getPassword() {
+        return KEY;
+    }
+
     static final byte[][] MAP_1 = new byte[][]{
             {-128, 27},
             {-127, 23},

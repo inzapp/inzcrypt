@@ -18,8 +18,8 @@ public class Inzcrypt {
     public static void main(String[] args) throws Exception {
         long st = System.currentTimeMillis();
         Inzcrypt inzcrypt = new Inzcrypt();
-        inzcrypt.addEncryptLayer(EncryptLayer.AES_256);
-        inzcrypt.addEncryptLayer(EncryptLayer.valueOf("AES_256a"));
+        inzcrypt.addEncryptLayer(EncryptLayer.DES);
+        inzcrypt.setPassword("asdfasdfasdfasdf");
 //        byte[] res = inzcrypt.encrypt("asd".getBytes(StandardCharsets.UTF_8));
 //        byte[] bok = inzcrypt.decrypt(res);
 //        System.out.println(new String(bok));
@@ -40,15 +40,15 @@ public class Inzcrypt {
     public void setPassword(String password) throws Exception {
         if (!(16 <= password.length() && password.length() <= 32))
             throw new InvalidPasswordException("password length must between 16 and 32");
-        Config.KEY = password;
+        Config.setPassword(password);
     }
 
     public void save(String fileName) {
-
+        // avoid duplicate file name
     }
 
     public void load(String fileName) throws Exception {
-
+        // no such file name exception
     }
 
     public void encrypt(File file) throws Exception {

@@ -49,10 +49,6 @@ class Encrypter {
                     bytes = xor(bytes);
                     break;
 
-                case BASE_64:
-                    bytes = base64(bytes);
-                    break;
-
                 case REVERSE:
                     bytes = reverse(bytes);
                     break;
@@ -106,7 +102,7 @@ class Encrypter {
         byte[] saltBytes = new byte[20];
         secureRandom.nextBytes(saltBytes);
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        PBEKeySpec pbeKeySpec = new PBEKeySpec(Config.KEY.toCharArray(), saltBytes, 64, 256);
+        PBEKeySpec pbeKeySpec = new PBEKeySpec(Config.getPassword().toCharArray(), saltBytes, 64, 256);
         SecretKey secretKey = secretKeyFactory.generateSecret(pbeKeySpec);
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getEncoded(), "AES");
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -243,7 +239,7 @@ class Encrypter {
     }
 
     private byte[] encryptKey(byte[] plainKeyBytes) throws Exception {
-        String keyForKey = Config.KEY;
+        String keyForKey = Config.getPassword();
         byte[] keyForKeyBytes = keyForKey.getBytes(StandardCharsets.UTF_8);
         byte[] ivBytes = new byte[16];
         System.arraycopy(keyForKeyBytes, 0, ivBytes, 0, 16);
