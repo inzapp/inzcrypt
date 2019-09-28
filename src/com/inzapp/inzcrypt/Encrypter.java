@@ -20,6 +20,12 @@ import java.util.List;
 import java.util.Random;
 
 class Encrypter {
+    private Config config;
+
+    Encrypter(Config config) {
+        this.config = config;
+    }
+
     void encrypt(File file) throws Exception {
         String fileNameWithExtension = file.getName();
         String fileNameWithoutExtension = getFileNameWithoutExtension(file);
@@ -31,8 +37,8 @@ class Encrypter {
     }
 
     byte[] encrypt(byte[] bytes) throws Exception {
-        for (int i = 0; i < Config.getEncryptLayers().size(); ++i) {
-            switch (Config.getEncryptLayers().get(i)) {
+        for (int i = 0; i < this.config.getEncryptLayers().size(); ++i) {
+            switch (this.config.getEncryptLayers().get(i)) {
                 case AES:
                     bytes = aes(bytes);
                     break;
@@ -54,15 +60,15 @@ class Encrypter {
                     break;
 
                 case BYTE_MAP_1:
-                    bytes = byteMap(bytes, Config.MAP_1);
+                    bytes = byteMap(bytes, this.config.MAP_1);
                     break;
 
                 case BYTE_MAP_2:
-                    bytes = byteMap(bytes, Config.MAP_2);
+                    bytes = byteMap(bytes, this.config.MAP_2);
                     break;
 
                 case BYTE_MAP_3:
-                    bytes = byteMap(bytes, Config.MAP_3);
+                    bytes = byteMap(bytes, this.config.MAP_3);
                     break;
 
                 default:
@@ -102,7 +108,7 @@ class Encrypter {
         secureRandom.nextBytes(saltBytes);
 
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        PBEKeySpec pbeKeySpec = new PBEKeySpec(Config.getPassword().toCharArray(), saltBytes, 64, 256);
+        PBEKeySpec pbeKeySpec = new PBEKeySpec(this.config.getPassword().toCharArray(), saltBytes, 64, 256);
         SecretKey secretKey = secretKeyFactory.generateSecret(pbeKeySpec);
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getEncoded(), "AES");
 
@@ -241,7 +247,7 @@ class Encrypter {
     }
 
     private byte[] encryptKey(byte[] plainKeyBytes) throws Exception {
-        String keyForKey = Config.getPassword();
+        String keyForKey = this.config.getPassword();
         byte[] keyForKeyBytes = keyForKey.getBytes(StandardCharsets.UTF_8);
 
         byte[] ivBytes = new byte[16];

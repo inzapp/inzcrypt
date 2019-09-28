@@ -20,6 +20,12 @@ import java.util.Base64;
 import java.util.List;
 
 class Decrypter {
+    private Config config;
+
+    Decrypter(Config config) {
+        this.config = config;
+    }
+
     void decrypt(File file) throws Exception {
         byte[] bytes = Files.readAllBytes(file.toPath());
         bytes = decrypt(bytes);
@@ -30,8 +36,8 @@ class Decrypter {
     }
 
     byte[] decrypt(byte[] bytes) throws Exception {
-        for (int i = Config.getEncryptLayers().size() - 1; i >= 0; --i) {
-            switch (Config.getEncryptLayers().get(i)) {
+        for (int i = this.config.getEncryptLayers().size() - 1; i >= 0; --i) {
+            switch (this.config.getEncryptLayers().get(i)) {
                 case AES:
                     bytes = aes(bytes);
                     break;
@@ -53,15 +59,15 @@ class Decrypter {
                     break;
 
                 case BYTE_MAP_1:
-                    bytes = byteMap(bytes, Config.MAP_1);
+                    bytes = byteMap(bytes, this.config.MAP_1);
                     break;
 
                 case BYTE_MAP_2:
-                    bytes = byteMap(bytes, Config.MAP_2);
+                    bytes = byteMap(bytes, this.config.MAP_2);
                     break;
 
                 case BYTE_MAP_3:
-                    bytes = byteMap(bytes, Config.MAP_3);
+                    bytes = byteMap(bytes, this.config.MAP_3);
                     break;
 
                 default:
@@ -85,7 +91,7 @@ class Decrypter {
         byteBuffer.get(encryptedTextBytes);
 
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        PBEKeySpec pbeKeySpec = new PBEKeySpec(Config.getPassword().toCharArray(), saltBytes, 64, 256);
+        PBEKeySpec pbeKeySpec = new PBEKeySpec(this.config.getPassword().toCharArray(), saltBytes, 64, 256);
         SecretKey secretKey = secretKeyFactory.generateSecret(pbeKeySpec);
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getEncoded(), "AES");
 
@@ -187,7 +193,7 @@ class Decrypter {
     }
 
     private byte[] decryptKey(byte[] encryptedKeyBytes) throws Exception {
-        String keyForKey = Config.getPassword();
+        String keyForKey = this.config.getPassword();
         byte[] keyForKeyBytes = keyForKey.getBytes(StandardCharsets.UTF_8);
 
         byte[] ivBytes = new byte[16];

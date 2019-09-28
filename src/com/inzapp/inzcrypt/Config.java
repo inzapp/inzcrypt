@@ -4,36 +4,36 @@ import java.util.LinkedList;
 import java.util.List;
 
 class Config {
-    private static String KEY = ";%cx4Z6-Fw9E*2,*96K5iu52Y;1e8j4^";
-    private static boolean KEY_CHANGED = false;
-    private static List<EncryptLayer> ENCRYPT_LAYERS = new LinkedList<>();
-    private static EncryptLayer[] PASSWORD_REQUIRED_LAYERS = new EncryptLayer[]{
+    private String KEY = ";%cx4Z6-Fw9E*2,*96K5iu52Y;1e8j4^";
+    private boolean KEY_CHANGED = false;
+    private List<EncryptLayer> ENCRYPT_LAYERS = new LinkedList<>();
+    private EncryptLayer[] PASSWORD_REQUIRED_LAYERS = new EncryptLayer[]{
             EncryptLayer.AES,
             EncryptLayer.DES
     };
 
-    static void setPassword(String password) {
+    void setPassword(String password) {
         KEY = password;
         KEY_CHANGED = true;
     }
 
-    static String getPassword() {
+    String getPassword() {
         return KEY;
     }
 
-    static void addEncryptLayer(EncryptLayer encryptLayer) {
+    void addEncryptLayer(EncryptLayer encryptLayer) {
         ENCRYPT_LAYERS.add(encryptLayer);
     }
 
-    static List<EncryptLayer> getEncryptLayers() {
+    List<EncryptLayer> getEncryptLayers() {
         return ENCRYPT_LAYERS;
     }
 
-    static boolean checkPasswordIsChanged() {
+    boolean checkPasswordIsChanged() {
         return KEY_CHANGED;
     }
 
-    static boolean checkRequirePassword() {
+    boolean checkRequirePassword() {
         for (EncryptLayer encryptLayer : getEncryptLayers()) {
             for (EncryptLayer passwordRequiredEncryptLayer : PASSWORD_REQUIRED_LAYERS) {
                 if (encryptLayer.equals(passwordRequiredEncryptLayer))
@@ -43,7 +43,7 @@ class Config {
         return false;
     }
 
-    static String passwordRequiredLayersToString() {
+    String passwordRequiredLayersToString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < PASSWORD_REQUIRED_LAYERS.length; ++i) {
             sb.append(PASSWORD_REQUIRED_LAYERS[i].name());
@@ -54,7 +54,7 @@ class Config {
         return sb.toString();
     }
 
-    static final byte[][] MAP_1 = new byte[][]{
+    final byte[][] MAP_1 = new byte[][]{
             {-128, 27},
             {-127, 23},
             {-126, -95},
@@ -313,7 +313,7 @@ class Config {
             {127, -77}
     };
 
-    static final byte[][] MAP_2 = new byte[][]{
+    final byte[][] MAP_2 = new byte[][]{
             {-128, -89},
             {-127, -58},
             {-126, 109},
@@ -572,7 +572,7 @@ class Config {
             {127, 33}
     };
 
-    static final byte[][] MAP_3 = new byte[][]{
+    final byte[][] MAP_3 = new byte[][]{
             {-128, -5},
             {-127, 38},
             {-126, 46},

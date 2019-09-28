@@ -2,7 +2,6 @@ package com.inzapp.inzcrypt;
 
 import com.inzapp.inzcrypt.exception.InvalidPasswordException;
 import com.inzapp.inzcrypt.exception.PasswordException;
-import com.inzapp.inzcrypt.exception.PasswordIsNotRequiredException;
 import com.inzapp.inzcrypt.exception.SecurityException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,39 +15,54 @@ import java.util.List;
 public class Inzcrypt {
     private Encrypter encrypter;
     private Decrypter decrypter;
+    private Config config;
 
     public Inzcrypt() {
-        this.encrypter = new Encrypter();
-        this.decrypter = new Decrypter();
+        this.config = new Config();
+        this.encrypter = new Encrypter(config);
+        this.decrypter = new Decrypter(config);
     }
 
-    public static void main(String[] args) throws Exception {
-//        Inzcrypt inzcrypt = Inzcrypt.load("inzcrypt.txt");
-        Inzcrypt inzcrypt = new Inzcrypt();
-        inzcrypt.addEncryptLayer(EncryptLayer.XOR);
-        inzcrypt.setPassword("asdfasdfasdfasdf");
-        inzcrypt.encrypt(new File("file.txt"));
-//        inzcrypt.decrypt(new File("file.izc"));
+/*    public static void main(String[] args) throws Exception {
+        test("aes", EncryptLayer.AES, "asdfasdfasdfasdf");
+        test("des", EncryptLayer.DES, "asdfasdfasdfasdf");
+        test("caesar", EncryptLayer.CAESAR, "asdfasdfasdfasdf");
+        test("xor", EncryptLayer.XOR, "asdfasdfasdfasdf");
+        test("reverse", EncryptLayer.REVERSE, "asdfasdfasdfasdf");
+        test("byte_map_1", EncryptLayer.BYTE_MAP_1, "asdfasdfasdfasdf");
+        test("byte_map_2", EncryptLayer.BYTE_MAP_2, "asdfasdfasdfasdf");
+        test("byte_map_3", EncryptLayer.BYTE_MAP_3, "asdfasdfasdfasdf");
     }
+
+    private static void test(String fileNameWithoutExtension, EncryptLayer encryptLayer, String password) throws Exception {
+        Inzcrypt inzcrypt = new Inzcrypt();
+        inzcrypt.addEncryptLayer(encryptLayer);
+        System.out.println(this.config.getEncryptLayers().size());
+        if(password != null)
+            inzcrypt.setPassword(password);
+        if(new File(fileNameWithoutExtension + ".txt").exists())
+            inzcrypt.encrypt(new File(fileNameWithoutExtension + ".txt"));
+        else inzcrypt.decrypt(new File(fileNameWithoutExtension + ".izc"));
+    }*/
 
     public void addEncryptLayer(EncryptLayer encryptLayer) {
-        Config.addEncryptLayer(encryptLayer);
+        this.config.addEncryptLayer(encryptLayer);
     }
 
     public void setPassword(String password) throws Exception {
         if (!(password.length() == 16 || password.length() == 32))
             throw new InvalidPasswordException("password length must be 16 or 32");
-        Config.setPassword(password);
+        this.config.setPassword(password);
     }
 
     public void save(String fileName) throws Exception {
         JSONObject json = new JSONObject();
         List<String> enumAttrNameList = new ArrayList<>();
 
-        for (EncryptLayer encryptLayer : Config.getEncryptLayers())
+        for (EncryptLayer encryptLayer : this.config.getEncryptLayers())
             enumAttrNameList.add(encryptLayer.name());
         json.put(JsonKey.LAYERS.name(), enumAttrNameList);
-        json.put(JsonKey.PASSWORD.name(), Config.getPassword());
+        json.put(JsonKey.PASSWORD.name(), this.config.getPassword());
 
         File outputFile = new File(new File("").getAbsolutePath() + "\\" + fileName);
         byte[] jsonBytes = json.toString(4).getBytes(StandardCharsets.UTF_8);
@@ -90,11 +104,11 @@ public class Inzcrypt {
     }
 
     private void checkException() throws Exception {
-        if (Config.getEncryptLayers().size() == 0)
+        if (this.config.getEncryptLayers().size() == 0)
             throw new SecurityException("encrypt layers size must be over than 1");
-        if (!Config.checkRequirePassword() && Config.checkPasswordIsChanged())
+        if (!this.config.checkRequirePassword() && this.config.checkPasswordIsChanged())
             throw new PasswordException("password is not required. defined layer is substitution cipher algorithm. it will be encrypted by random generated key.");
-        if (Config.checkRequirePassword() && !Config.checkPasswordIsChanged())
-            throw new PasswordException("password is required. defined layer is symmetric-key algorithm layer. " + Config.passwordRequiredLayersToString() + ".");
+        if (this.config.checkRequirePassword() && !this.config.checkPasswordIsChanged())
+            throw new PasswordException("password is required. defined layer is symmetric-key algorithm layer. symmetric-key algorithm layer :  " + this.config.passwordRequiredLayersToString() + ".");
     }
 }
