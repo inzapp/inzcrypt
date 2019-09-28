@@ -1,7 +1,7 @@
 package com.inzapp.inzcrypt;
 
 import com.inzapp.inzcrypt.exception.InvalidPasswordException;
-import com.inzapp.inzcrypt.exception.PasswordException;
+import com.inzapp.inzcrypt.exception.PasswordRequiredException;
 import com.inzapp.inzcrypt.exception.SecurityException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -84,9 +84,7 @@ public class Inzcrypt {
     private void checkException() throws Exception {
         if (this.config.getEncryptLayers().size() == 0)
             throw new SecurityException("encrypt layers size must be over than 1");
-        if (!this.config.checkRequirePassword() && this.config.checkPasswordIsChanged())
-            throw new PasswordException("password is not required. defined layer is substitution cipher algorithm. it will be encrypted by random generated key.");
-        if (this.config.checkRequirePassword() && !this.config.checkPasswordIsChanged())
-            throw new PasswordException("password is required. defined layer is symmetric-key algorithm layer. symmetric-key algorithm layer :  " + this.config.passwordRequiredLayersToString() + ".");
+        if(!this.config.checkKeyChanged())
+            throw new PasswordRequiredException("password must be defined. use setPassword() method to define your password.");
     }
 }

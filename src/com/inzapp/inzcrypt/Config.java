@@ -4,13 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 class Config {
-    private String KEY = ";%cx4Z6-Fw9E*2,*96K5iu52Y;1e8j4^";
-    private boolean KEY_CHANGED = false;
+    private String KEY = "";
     private List<EncryptLayer> ENCRYPT_LAYERS = new LinkedList<>();
-    private EncryptLayer[] PASSWORD_REQUIRED_LAYERS = new EncryptLayer[]{
-            EncryptLayer.AES,
-            EncryptLayer.DES
-    };
+    private boolean KEY_CHANGED = false;
 
     void setPassword(String password) {
         KEY = password;
@@ -29,29 +25,8 @@ class Config {
         return ENCRYPT_LAYERS;
     }
 
-    boolean checkPasswordIsChanged() {
+    boolean checkKeyChanged() {
         return KEY_CHANGED;
-    }
-
-    boolean checkRequirePassword() {
-        for (EncryptLayer encryptLayer : getEncryptLayers()) {
-            for (EncryptLayer passwordRequiredEncryptLayer : PASSWORD_REQUIRED_LAYERS) {
-                if (encryptLayer.equals(passwordRequiredEncryptLayer))
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    String passwordRequiredLayersToString() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < PASSWORD_REQUIRED_LAYERS.length; ++i) {
-            sb.append(PASSWORD_REQUIRED_LAYERS[i].name());
-            if (i == PASSWORD_REQUIRED_LAYERS.length - 1)
-                break;
-            sb.append(", ");
-        }
-        return sb.toString();
     }
 
     final byte[][] MAP_1 = new byte[][]{
