@@ -23,28 +23,6 @@ public class Inzcrypt {
         this.decrypter = new Decrypter(config);
     }
 
-/*    public static void main(String[] args) throws Exception {
-        test("aes", EncryptLayer.AES, "asdfasdfasdfasdf");
-        test("des", EncryptLayer.DES, "asdfasdfasdfasdf");
-        test("caesar", EncryptLayer.CAESAR, "asdfasdfasdfasdf");
-        test("xor", EncryptLayer.XOR, "asdfasdfasdfasdf");
-        test("reverse", EncryptLayer.REVERSE, "asdfasdfasdfasdf");
-        test("byte_map_1", EncryptLayer.BYTE_MAP_1, "asdfasdfasdfasdf");
-        test("byte_map_2", EncryptLayer.BYTE_MAP_2, "asdfasdfasdfasdf");
-        test("byte_map_3", EncryptLayer.BYTE_MAP_3, "asdfasdfasdfasdf");
-    }
-
-    private static void test(String fileNameWithoutExtension, EncryptLayer encryptLayer, String password) throws Exception {
-        Inzcrypt inzcrypt = new Inzcrypt();
-        inzcrypt.addEncryptLayer(encryptLayer);
-        System.out.println(this.config.getEncryptLayers().size());
-        if(password != null)
-            inzcrypt.setPassword(password);
-        if(new File(fileNameWithoutExtension + ".txt").exists())
-            inzcrypt.encrypt(new File(fileNameWithoutExtension + ".txt"));
-        else inzcrypt.decrypt(new File(fileNameWithoutExtension + ".izc"));
-    }*/
-
     public void addEncryptLayer(EncryptLayer encryptLayer) {
         this.config.addEncryptLayer(encryptLayer);
     }
