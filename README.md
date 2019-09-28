@@ -13,10 +13,12 @@ File encryption, decryption util using custom encrypt layer.
   - BYTE_MAP_1 : Each byte is mapped one-to-one by custom byte-map.
   - BYTE_MAP_2 : Each byte is mapped one-to-one by custom byte-map.
   - BYTE_MAP_3 : Each byte is mapped one-to-one by custom byte-map.<br><br>
-  
-**The file is encrypted by a randomly defined key.**<br>
-**The user-specified password is used for encrypt randomly generated keys, which are stored at the end of the file.**
-  
+
+Files are encrypted by randomly generated keys,<br>
+and user-defined password is used for encrypt randomly generated keys.<br>
+Encrypted keys are stored at the end of the file.<br>
+This is to have different results even if the files of the same content are encrypted with the same settings.<br>
+
 ## Usage
 Example encryption test.txt file with AES
 ```java
