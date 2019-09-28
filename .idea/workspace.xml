@@ -7,23 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ec78b75f-84e9-4034-b53b-d2c63d96564a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/aes.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/des.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/key.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/1.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aes.izc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/byte_map_1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/byte_map_1.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/byte_map_2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/byte_map_2.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/byte_map_3.txt" beforeDir="false" afterPath="$PROJECT_DIR$/byte_map_3.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/caesar.txt" beforeDir="false" afterPath="$PROJECT_DIR$/caesar.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/des.izc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/inzcrypt/Tester.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/inzcrypt/Tester.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Inzcrypt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/inzcrypt/com/inzapp/inzcrypt/Inzcrypt.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reverse.txt" beforeDir="false" afterPath="$PROJECT_DIR$/reverse.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Tester.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Tester.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Inzcrypt.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inzapp/inzcrypt/Inzcrypt.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xor.txt" beforeDir="false" afterPath="$PROJECT_DIR$/xor.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -49,7 +34,7 @@
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/TreemapJson.jar!/" />
-    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
