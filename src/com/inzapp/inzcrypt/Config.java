@@ -7,6 +7,10 @@ class Config {
     private static String KEY = ";%cx4Z6-Fw9E*2,*96K5iu52Y;1e8j4^";
     private static boolean KEY_CHANGED = false;
     private static List<EncryptLayer> ENCRYPT_LAYERS = new LinkedList<>();
+    private static EncryptLayer[] PASSWORD_REQUIRED_LAYERS = new EncryptLayer[]{
+            EncryptLayer.AES,
+            EncryptLayer.DES
+    };
 
     static void setPassword(String password) {
         KEY = password;
@@ -25,20 +29,29 @@ class Config {
         return ENCRYPT_LAYERS;
     }
 
-    static boolean checkPasswordIsInvalid() {
-        if (!KEY_CHANGED)
-            return false;
-        EncryptLayer[] passwordRequiredEncryptLayers = new EncryptLayer[]{
-                EncryptLayer.AES,
-                EncryptLayer.DES
-        };
-        for (EncryptLayer encryptLayer : Config.getEncryptLayers()) {
-            for (EncryptLayer passwordRequiredEncryptLayer : passwordRequiredEncryptLayers) {
+    static boolean checkPasswordIsChanged() {
+        return KEY_CHANGED;
+    }
+
+    static boolean checkRequirePassword() {
+        for (EncryptLayer encryptLayer : getEncryptLayers()) {
+            for (EncryptLayer passwordRequiredEncryptLayer : PASSWORD_REQUIRED_LAYERS) {
                 if (encryptLayer.equals(passwordRequiredEncryptLayer))
-                    return false;
+                    return true;
             }
         }
-        return true;
+        return false;
+    }
+
+    static String passwordRequiredLayersToString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < PASSWORD_REQUIRED_LAYERS.length; ++i) {
+            sb.append(PASSWORD_REQUIRED_LAYERS[i].name());
+            if (i == PASSWORD_REQUIRED_LAYERS.length - 1)
+                break;
+            sb.append(", ");
+        }
+        return sb.toString();
     }
 
     static final byte[][] MAP_1 = new byte[][]{

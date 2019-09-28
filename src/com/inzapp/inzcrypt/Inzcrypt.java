@@ -1,6 +1,7 @@
 package com.inzapp.inzcrypt;
 
 import com.inzapp.inzcrypt.exception.InvalidPasswordException;
+import com.inzapp.inzcrypt.exception.PasswordException;
 import com.inzapp.inzcrypt.exception.PasswordIsNotRequiredException;
 import com.inzapp.inzcrypt.exception.SecurityException;
 import org.json.JSONArray;
@@ -22,11 +23,12 @@ public class Inzcrypt {
     }
 
     public static void main(String[] args) throws Exception {
-        long st = System.currentTimeMillis();
-        Inzcrypt inzcrypt = Inzcrypt.load("inzcrypt.txt");
+//        Inzcrypt inzcrypt = Inzcrypt.load("inzcrypt.txt");
+        Inzcrypt inzcrypt = new Inzcrypt();
+        inzcrypt.addEncryptLayer(EncryptLayer.XOR);
+        inzcrypt.setPassword("asdfasdfasdfasdf");
         inzcrypt.encrypt(new File("file.txt"));
 //        inzcrypt.decrypt(new File("file.izc"));
-        System.out.println(System.currentTimeMillis() - st);
     }
 
     public void addEncryptLayer(EncryptLayer encryptLayer) {
@@ -35,7 +37,7 @@ public class Inzcrypt {
 
     public void setPassword(String password) throws Exception {
         if (!(password.length() == 16 || password.length() == 32))
-            throw new InvalidPasswordException("password length must between 16 or 32");
+            throw new InvalidPasswordException("password length must be 16 or 32");
         Config.setPassword(password);
     }
 
@@ -50,9 +52,6 @@ public class Inzcrypt {
 
         File outputFile = new File(new File("").getAbsolutePath() + "\\" + fileName);
         byte[] jsonBytes = json.toString(4).getBytes(StandardCharsets.UTF_8);
-//        Inzcrypt encrypter = new Inzcrypt();
-//        encrypter.addEncryptLayer(EncryptLayer.XOR);
-//        jsonBytes = encrypter.encrypt(jsonBytes);
         Files.write(outputFile.toPath(), jsonBytes);
     }
 
@@ -93,7 +92,9 @@ public class Inzcrypt {
     private void checkException() throws Exception {
         if (Config.getEncryptLayers().size() == 0)
             throw new SecurityException("encrypt layers size must be over than 1");
-        if (Config.checkPasswordIsInvalid())
-            throw new PasswordIsNotRequiredException("no password is required for defined layers");
+        if (!Config.checkRequirePassword() && Config.checkPasswordIsChanged())
+            throw new PasswordException("password is not required. defined layer is substitution cipher algorithm. it will be encrypted by random generated key.");
+        if (Config.checkRequirePassword() && !Config.checkPasswordIsChanged())
+            throw new PasswordException("password is required. defined layer is symmetric-key algorithm layer. " + Config.passwordRequiredLayersToString() + ".");
     }
 }
