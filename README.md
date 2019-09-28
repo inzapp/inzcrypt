@@ -1,8 +1,8 @@
 # Inzcrypt
-File encryption, decryption util using custom encrypt layer.
+File encryption, decryption util using custom encrypt layer.<br><br>
 
 ## Download
-https://github.com/inzapp/inzcrypt/releases
+https://github.com/inzapp/inzcrypt/releases<br><br>
 
 ## Supported encrypt method
 - Symmetric-key algorithm
@@ -20,7 +20,7 @@ https://github.com/inzapp/inzcrypt/releases
 Files are encrypted by randomly generated keys,<br>
 and user-defined password is used for encrypt randomly generated keys.<br>
 Encrypted keys are stored at the end of the file.<br>
-This is to have different results even if the files of the same content are encrypted with the same settings.<br>
+This is to have different results even if the files of the same content are encrypted with the same settings.<br><br>
 
 ## Usage
 Example encryption test.txt file with AES
@@ -42,6 +42,7 @@ After encrypt : **test.izc**
 ??1믑????湞쫼?Lca$뼏?뵑
 RbZWRpBcLoaLuU/CXqTttlR4R7PptCZE31pleGG7hMvMS3qPh8Er4KFv5gsNsP6J
 ```
+<br>
 
 ## Custom encryption
 Create your own encryption algorithm.
@@ -58,6 +59,7 @@ inzcrypt.addEncryptLayer(EncryptLayer.BYTE_MEP_3);
 inzcrypt.setPassword("16_or_32_length_password");
 inzcrypt.encrypt(new File("test.txt"));
 ```
+<br>
 
 ## Save configuration
 Save inzcrypt configuration to file.
@@ -80,6 +82,7 @@ inzcrypt.save("key.txt");
     "PASSWORD": "16_or_32_length_password"
 }
 ```
+<br>
 
 ## Load Configuration
 Load inzcrypt configuration from file.
