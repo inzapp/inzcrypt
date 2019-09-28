@@ -23,16 +23,9 @@ public class Inzcrypt {
 
     public static void main(String[] args) throws Exception {
         long st = System.currentTimeMillis();
-        Inzcrypt inzcrypt = Inzcrypt.load("file.txt");
-
-//        Inzcrypt inzcrypt = new Inzcrypt();
-//        inzcrypt.addEncryptLayer(EncryptLayer.AES);
-//        inzcrypt.addEncryptLayer(EncryptLayer.DES);
-//        inzcrypt.setPassword("1234567890123456");
-//        inzcrypt.save("file.txt");
-        if (new File("sample.jpg").exists())
-            inzcrypt.encrypt(new File("sample.jpg"));
-        else inzcrypt.decrypt(new File("sample.izc"));
+        Inzcrypt inzcrypt = Inzcrypt.load("inzcrypt.txt");
+        inzcrypt.encrypt(new File("file.txt"));
+//        inzcrypt.decrypt(new File("file.izc"));
         System.out.println(System.currentTimeMillis() - st);
     }
 
@@ -57,18 +50,15 @@ public class Inzcrypt {
 
         File outputFile = new File(new File("").getAbsolutePath() + "\\" + fileName);
         byte[] jsonBytes = json.toString(4).getBytes(StandardCharsets.UTF_8);
+//        Inzcrypt encrypter = new Inzcrypt();
+//        encrypter.addEncryptLayer(EncryptLayer.XOR);
+//        jsonBytes = encrypter.encrypt(jsonBytes);
         Files.write(outputFile.toPath(), jsonBytes);
     }
 
     public static Inzcrypt load(String fileName) throws Exception {
         File inputFile = new File(new File("").getAbsolutePath() + "\\" + fileName);
         byte[] bytes = Files.readAllBytes(inputFile.toPath());
-
-        Inzcrypt jsonDecryptInzcrypt = new Inzcrypt();
-        jsonDecryptInzcrypt.addEncryptLayer(EncryptLayer.XOR);
-        jsonDecryptInzcrypt.addEncryptLayer(EncryptLayer.XOR);
-        jsonDecryptInzcrypt.addEncryptLayer(EncryptLayer.XOR);
-        bytes = jsonDecryptInzcrypt.decrypt(bytes);
 
         JSONObject json = new JSONObject(new String(bytes, StandardCharsets.UTF_8));
         JSONArray jsonArray = json.getJSONArray(JsonKey.LAYERS.name());
