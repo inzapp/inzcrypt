@@ -1,6 +1,9 @@
 # Inzcrypt
 File encryption, decryption util using custom encrypt layer.
 
+## Download
+https://github.com/inzapp/inzcrypt/releases
+
 ## Supported encrypt method
 - Symmetric-key algorithm
   - AES (Advanced Encryption Standard) : 128, 256-bit block cipher
