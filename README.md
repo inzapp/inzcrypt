@@ -1,9 +1,10 @@
 # Inzcrypt
-Inzcrypt is a Util that encrypts files using its own algorithm using an encryption layer.<br><br>
+Inzcrypt is a util that encrypts files using its own algorithm using an encryption layer.<br><br>
 
 Files are encrypted by randomly generated keys,<br>
 and user-defined password is used for encrypt randomly generated keys.<br>
-Because it generates keys randomly every time you encrypt it, the results are different even if you encrypt the same content.<br><br>
+Because it generates keys randomly every time you encrypt it, 
+the results are different even if you encrypt the same content.<br><br>
 
 The unique characteristic of Inzcrypt is that various encryption algorithms combine to create their own encryption algorithms.<br>
 If a user does not know the sequence of encryption layers, it is impossible to decryption even if a key is leaked.<br>
