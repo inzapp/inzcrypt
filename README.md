@@ -1,5 +1,13 @@
 # Inzcrypt
-File encryption, decryption util using custom encrypt layer.<br><br>
+Inzcrypt is a Util that encrypts files using its own algorithm using an encryption layer.<br><br>
+
+Files are encrypted by randomly generated keys,<br>
+and user-defined password is used for encrypt randomly generated keys.<br>
+Because it generates keys randomly every time you encrypt it, the results are different even if you encrypt the same content.<br><br>
+
+The unique characteristic of Inzcrypt is that various encryption algorithms combine to create their own encryption algorithms.<br>
+If a user does not know the sequence of encryption layers, it is impossible to decryption even if a key is leaked.<br>
+No program can decode files encrypted with Inzcrypt.<br><br>
 
 ## Download
 https://github.com/inzapp/inzcrypt/releases<br><br>
@@ -16,11 +24,6 @@ https://github.com/inzapp/inzcrypt/releases<br><br>
   - BYTE_MAP_1 : Each byte is mapped one-to-one by custom byte-map.
   - BYTE_MAP_2 : Each byte is mapped one-to-one by custom byte-map.
   - BYTE_MAP_3 : Each byte is mapped one-to-one by custom byte-map.<br><br>
-
-Files are encrypted by randomly generated keys,<br>
-and user-defined password is used for encrypt randomly generated keys.<br>
-Encrypted keys are stored at the end of the file.<br>
-This is to have different results even if the files of the same content are encrypted with the same settings.<br><br>
 
 ## Usage
 Example encryption test.txt file with AES
