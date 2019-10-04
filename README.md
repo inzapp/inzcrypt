@@ -8,7 +8,7 @@ the results are different even if you encrypt the same content.<br><br>
 
 A characteristic of Inzcrypt is that it creates its own encryption algorithm by combining various encryption algorithms.<br>
 If a user does not know the sequence of encryption layers, it is impossible to decryption even if a key is leaked.<br>
-No program can decode files encrypted with Inzcrypt.<br><br>
+Encrypted files using Inzcrypt can be decrypted using Inzcrypt only.<br><br>
 
 ## Download
 https://github.com/inzapp/inzcrypt/releases<br><br>
